@@ -1,8 +1,8 @@
 package com.ssup2ket.store.server.http.error;
 
 import com.ssup2ket.store.server.error.ErrorCode;
-import com.ssup2ket.store.server.error.StoreNotFoundException;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
+import com.ssup2ket.store.server.error.StoreNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class HttpExceptionHandler extends ResponseEntityExceptionHandler {
   // Not found exceptions
   @ExceptionHandler(value = {StoreNotFoundException.class})
-  private ResponseEntity<Object> handleInventoryNotFoundException(
+  private ResponseEntity<Object> handleStoreNotFoundException(
       StoreNotFoundException exception, WebRequest request) {
     return handleExceptionInternal(
         exception,

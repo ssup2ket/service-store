@@ -35,27 +35,27 @@ public class StoreController {
   @Autowired private ModelMapper modelMapper;
 
   @GetMapping("/stores")
-  StoreInfoListRes listInventory(
+  StoreInfoListRes listStore(
       @RequestParam(value = "offset", defaultValue = "0") int offset,
       @RequestParam(value = "limit", defaultValue = "50") int limit) {
     return convertStoreInfoListResToDto(service.listStoreInfos(offset / limit, limit));
   }
 
   @PostMapping("/stores")
-  StoreInfoRes createInventory(@RequestBody @Valid StoreInfoReq request) {
+  StoreInfoRes createStore(@RequestBody @Valid StoreInfoReq request) {
     StoreInfo req = convertStoreInfoReqToModel(request);
     StoreInfo res = service.createStoreInfo(req);
     return convertStoreInfoResToDto(res);
   }
 
   @GetMapping("/stores/{storeId}")
-  StoreInfoRes getInventory(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
-    StoreInfo resInventoryInfo = service.getStoreInfo(UUID.fromString(storeId));
-    return convertStoreInfoResToDto(resInventoryInfo);
+  StoreInfoRes getStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
+    StoreInfo resStoreInfo = service.getStoreInfo(UUID.fromString(storeId));
+    return convertStoreInfoResToDto(resStoreInfo);
   }
 
   @PutMapping("/stores/{storeId}")
-  void updateInventory(
+  void updateStore(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestBody @Valid StoreInfoReq request) {
     StoreInfo reqProductInfo = convertStoreInfoReqToModel(request);
@@ -64,7 +64,7 @@ public class StoreController {
   }
 
   @DeleteMapping("/stores/{storeId}")
-  void deleteInventory(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
+  void deleteStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
     service.deleteStoreInfo(UUID.fromString(storeId));
   }
 
@@ -72,19 +72,18 @@ public class StoreController {
     return modelMapper.map(request, StoreInfo.class);
   }
 
-  public StoreInfoRes convertStoreInfoResToDto(StoreInfo invenInfo) {
-    return modelMapper.map(invenInfo, StoreInfoRes.class);
+  public StoreInfoRes convertStoreInfoResToDto(StoreInfo storeInfo) {
+    return modelMapper.map(storeInfo, StoreInfoRes.class);
   }
 
-  public StoreInfoListRes convertStoreInfoListResToDto(List<StoreInfo> invenInfoList) {
+  public StoreInfoListRes convertStoreInfoListResToDto(List<StoreInfo> storeInfoList) {
     // Make up store info response list
-    List<StoreInfoRes> invenInfoResList = new ArrayList<>();
-    Iterator<StoreInfo> iter = invenInfoList.iterator();
+    List<StoreInfoRes> storeInfoResList = new ArrayList<>();
+    Iterator<StoreInfo> iter = storeInfoList.iterator();
     while (iter.hasNext()) {
-      invenInfoResList.add(convertStoreInfoResToDto(iter.next()));
+      storeInfoResList.add(convertStoreInfoResToDto(iter.next()));
     }
-
-    // Return response
-    return new StoreInfoListRes(invenInfoResList);
+    // Return response:
+    return new StoreInfoListRes(storeInfoResList);
   }
 }

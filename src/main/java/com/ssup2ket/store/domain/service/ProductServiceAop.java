@@ -23,7 +23,7 @@ public class ProductServiceAop {
   @Autowired private ProductInfoRepository productInfoSecondaryRepo;
 
   @Before("execution(* com.ssup2ket.store.domain.service.ProductServiceImp.*(..))")
-  private void validateInventoryFromSecondaryDB(JoinPoint joinPoint) {
+  private void validateStoreFromSecondaryDB(JoinPoint joinPoint) {
     // Get store UUID
     UUID storeId;
     if (joinPoint.getArgs()[0] instanceof UUID) {
@@ -31,10 +31,10 @@ public class ProductServiceAop {
     } else if (joinPoint.getArgs()[0] instanceof ProductInfo) {
       storeId = ((ProductInfo) joinPoint.getArgs()[0]).getStoreId();
     } else {
-      throw new IllegalArgumentException("Wrong inventory UUID");
+      throw new IllegalArgumentException("Wrong store ID");
     }
 
-    // Get inventory info
+    // Get store info
     storeInfoSecondaryRepo.findById(storeId).orElseThrow(() -> new StoreNotFoundException(storeId));
   }
 

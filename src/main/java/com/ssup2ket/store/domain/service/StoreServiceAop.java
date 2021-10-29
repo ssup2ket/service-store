@@ -20,10 +20,10 @@ public class StoreServiceAop {
 
   @Before(
       "execution(*"
-          + " com.ssup2ket.store.domain.service.InventoryServiceImp.updateStoreInfo(..)) ||"
+          + " com.ssup2ket.store.domain.service.StoreServiceImp.updateStoreInfo(..)) ||"
           + " execution(*"
-          + " com.ssup2ket.store.domain.service.InventoryServiceImp.deleteStoreInfo(..))")
-  private void validateInventoryFromPrimaryDB(JoinPoint joinPoint) {
+          + " com.ssup2ket.store.domain.service.StoreServiceImp.deleteStoreInfo(..))")
+  private void validateStoreFromPrimaryDB(JoinPoint joinPoint) {
     // Get store UUID
     UUID storeId;
     if (joinPoint.getArgs()[0] instanceof UUID) {

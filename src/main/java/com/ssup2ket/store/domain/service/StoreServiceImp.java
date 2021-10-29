@@ -29,8 +29,8 @@ public class StoreServiceImp implements StoreService {
 
   @Override
   @Transactional
-  public StoreInfo createStoreInfo(StoreInfo inventoryInfo) {
-    return storeInfoPrimaryRepo.save(inventoryInfo);
+  public StoreInfo createStoreInfo(StoreInfo storeInfo) {
+    return storeInfoPrimaryRepo.save(storeInfo);
   }
 
   @Override

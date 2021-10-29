@@ -61,8 +61,15 @@ test {
 	useJUnitPlatform()
 }
 
+// Custom tasks
+task initLocal(type: Exec) {
+	group 'Application'
+	description 'Setup up local development environment'
+	commandLine 'sh', '-c', 'docker run --network=host --name ssup2ket-store-local-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=local_store -d mysql:8.0'
+}
+
 task bootRunEnv(type: Exec) {
 	group 'Application'
 	description 'Runs this project as a Spring Boot application with env'
-	commandLine 'sh', '-c', 'source ./script/env-local && exec ./gradlew bootRun'
+	commandLine 'sh', '-c', 'source ./scripts/env-local && exec ./gradlew bootRun'
 }

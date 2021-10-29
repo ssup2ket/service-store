@@ -12,5 +12,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInfoListRes {
-   List<ProductInfo> inventories;
+  List<ProductInfo> products;
 }
