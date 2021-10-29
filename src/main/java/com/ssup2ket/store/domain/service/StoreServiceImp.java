@@ -16,12 +16,14 @@ public class StoreServiceImp implements StoreService {
   @Autowired private StoreInfoRepository storeInfoSecondaryRepo;
 
   @Override
+  @Transactional("secondaryTransactionManager")
   public List<StoreInfo> listStoreInfos(int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
     return storeInfoSecondaryRepo.findAll(pageRequest).getContent();
   }
 
   @Override
+  @Transactional("secondaryTransactionManager")
   public List<StoreInfo> listStoreInfosByName(String name, int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
     return storeInfoSecondaryRepo.findByName(name, pageRequest);

@@ -16,12 +16,14 @@ public class ProductServiceImp implements ProductService {
   @Autowired private ProductInfoRepository productInfoSecondaryRepo;
 
   @Override
+  @Transactional("secondaryTransactionManager")
   public List<ProductInfo> listProductInfos(UUID storeId, int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
     return productInfoSecondaryRepo.findAll(pageRequest).getContent();
   }
 
   @Override
+  @Transactional("secondaryTransactionManager")
   public List<ProductInfo> listProductInfosByName(UUID storeId, String name, int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
     return productInfoSecondaryRepo.findByName(name, pageRequest);
@@ -34,7 +36,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
-  @Transactional
+  @Transactional("secondaryTransactionManager")
   public ProductInfo getProductInfo(UUID storeId, UUID productId) {
     return productInfoSecondaryRepo
         .findById(productId)
@@ -54,7 +56,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
-  @Transactional
+  @Transactional("secondaryTransactionManager")
   public int getProductQuantity(UUID storeId, UUID productId) {
     return 0;
   }
