@@ -29,5 +29,5 @@ public class ProductInfo {
   private String description;
 
   @Column(columnDefinition = "BINARY(16)")
-  private UUID inventoryId;
+  private UUID storeId;
 }

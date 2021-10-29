@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ssup2ket'
-version = '0.0.1-SNAPSHOT'
+version = 'v1'
 sourceCompatibility = '17'
 
 configurations {
@@ -48,6 +48,21 @@ dependencyManagement {
 	}
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
 test {
 	useJUnitPlatform()
+}
+
+task bootRunEnv(type: Exec) {
+	group 'Application'
+	description 'Runs this project as a Spring Boot application with env'
+	commandLine 'sh', '-c', 'source ./script/env-local && exec ./gradlew bootRun'
 }

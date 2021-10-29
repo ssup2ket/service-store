@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "inventories")
+@Table(name = "stores")
 public class StoreInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

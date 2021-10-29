@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "com.ssup2ket.inventory.domain.repository",
+    basePackages = "com.ssup2ket.store.domain.repository",
     entityManagerFactoryRef = "secondaryEntityManagerFactory",
     transactionManagerRef = "secondaryTransactionManager",
     includeFilters = @ComponentScan.Filter(DataSourceReadOnly.class))
@@ -32,7 +32,7 @@ public class DataSourceSecondaryConfig {
       EntityManagerFactoryBuilder builder) {
     return builder
         .dataSource(secondaryDataSource())
-        .packages("com.ssup2ket.inventory.domain.model")
+        .packages("com.ssup2ket.store.domain.model")
         .persistenceUnit("secondary")
         .build();
   }
