@@ -1,7 +1,7 @@
 package com.ssup2ket.store.domain.service;
 
 import com.ssup2ket.store.domain.model.StoreInfo;
-import com.ssup2ket.store.domain.repository.StoreInfoRepository;
+import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.UUID;
 import org.aspectj.lang.JoinPoint;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class StoreServiceAop {
-  @Autowired private StoreInfoRepository storeInfoPrimaryRepo;
+  @Autowired private StoreInfoPrimaryRepo storeInfoPrimaryRepo;
 
   @Before(
       "execution(*"

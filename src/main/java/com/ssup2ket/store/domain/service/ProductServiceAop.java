@@ -1,8 +1,9 @@
 package com.ssup2ket.store.domain.service;
 
 import com.ssup2ket.store.domain.model.ProductInfo;
-import com.ssup2ket.store.domain.repository.ProductInfoRepository;
-import com.ssup2ket.store.domain.repository.StoreInfoRepository;
+import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
+import com.ssup2ket.store.domain.repository.ProductInfoSecondaryRepo;
+import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.UUID;
@@ -18,9 +19,9 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Component
 public class ProductServiceAop {
-  @Autowired private StoreInfoRepository storeInfoSecondaryRepo;
-  @Autowired private ProductInfoRepository productInfoPrimaryRepo;
-  @Autowired private ProductInfoRepository productInfoSecondaryRepo;
+  @Autowired private StoreInfoPrimaryRepo storeInfoSecondaryRepo;
+  @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
+  @Autowired private ProductInfoSecondaryRepo productInfoSecondaryRepo;
 
   @Before("execution(* com.ssup2ket.store.domain.service.ProductServiceImp.*(..))")
   private void validateStoreFromSecondaryDB(JoinPoint joinPoint) {

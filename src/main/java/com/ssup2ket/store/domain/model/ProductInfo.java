@@ -19,15 +19,15 @@ public class ProductInfo {
   @Column(columnDefinition = "BINARY(16)")
   private UUID id;
 
+  @Column(columnDefinition = "BINARY(16)")
+  private UUID storeId;
+
   @Length(max = 30)
   private String name;
-
-  @Min(0)
-  private int quantity;
 
   @Length(max = 50)
   private String description;
 
-  @Column(columnDefinition = "BINARY(16)")
-  private UUID storeId;
+  @Min(0)
+  private int quantity;
 }

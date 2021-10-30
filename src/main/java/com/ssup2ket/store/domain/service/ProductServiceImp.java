@@ -1,7 +1,7 @@
 package com.ssup2ket.store.domain.service;
 
 import com.ssup2ket.store.domain.model.ProductInfo;
-import com.ssup2ket.store.domain.repository.ProductInfoRepository;
+import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImp implements ProductService {
-  @Autowired private ProductInfoRepository productInfoPrimaryRepo;
-  @Autowired private ProductInfoRepository productInfoSecondaryRepo;
+  @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
+  @Autowired private ProductInfoPrimaryRepo productInfoSecondaryRepo;
 
   @Override
   @Transactional("secondaryTransactionManager")
@@ -53,18 +53,6 @@ public class ProductServiceImp implements ProductService {
   @Transactional
   public void deleteProductInfo(UUID storeId, UUID productId) {
     productInfoPrimaryRepo.deleteById(productId);
-  }
-
-  @Override
-  @Transactional("secondaryTransactionManager")
-  public int getProductQuantity(UUID storeId, UUID productId) {
-    return 0;
-  }
-
-  @Override
-  @Transactional
-  public void updateProductQuantity(UUID storeId, int productQuantity) {
-    return;
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.ssup2ket.store.server.http.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,4 +20,7 @@ public class ProductInfoReq {
   @NotBlank
   @Size(max = 100)
   private String description;
+
+  @Min(0)
+  private int quantity;
 }

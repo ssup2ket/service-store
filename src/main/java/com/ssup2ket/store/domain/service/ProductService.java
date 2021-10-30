@@ -17,10 +17,6 @@ public interface ProductService {
 
   public void deleteProductInfo(UUID storeId, UUID productId);
 
-  public int getProductQuantity(UUID storeId, UUID productId);
-
-  public void updateProductQuantity(UUID storeId, int productQuantity);
-
   public int increaseProductQuantity(UUID storeId, UUID productId, long increment);
 
   public int decreaseProductQuantity(UUID storeId, UUID productId, long decrement);

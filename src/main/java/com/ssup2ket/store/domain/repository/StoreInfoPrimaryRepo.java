@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StoreInfoRepository extends JpaRepository<StoreInfo, UUID> {
+public interface StoreInfoPrimaryRepo extends JpaRepository<StoreInfo, UUID> {
   public List<StoreInfo> findByName(String name, Pageable pageable);
 }

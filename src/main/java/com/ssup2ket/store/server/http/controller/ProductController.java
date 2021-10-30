@@ -84,22 +84,6 @@ public class ProductController {
     service.deleteProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
   }
 
-  @GetMapping("/stores/{storeId}/products/{productId}/quantity")
-  ProductQuantityRes getProductQuantity(
-      @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
-      @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
-    return convertProductQuantityResToDto(
-        storeId, service.getProductQuantity(UUID.fromString(storeId), UUID.fromString(productId)));
-  }
-
-  @PutMapping("/stores/{storeId}/products/{productId}/quantity")
-  void updateProductQuantity(
-      @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
-      @PathVariable @Pattern(regexp = uuidRegExp) String productId,
-      @RequestBody @Valid ProductQuantityReq request) {
-    service.updateProductQuantity(UUID.fromString(storeId), request.getQuantity());
-  }
-
   @PostMapping("/stores/{storeId}/products/{productId}/quantity/increase")
   ProductQuantityRes increaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,

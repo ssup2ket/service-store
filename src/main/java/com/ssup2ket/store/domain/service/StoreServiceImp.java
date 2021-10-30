@@ -1,7 +1,7 @@
 package com.ssup2ket.store.domain.service;
 
 import com.ssup2ket.store.domain.model.StoreInfo;
-import com.ssup2ket.store.domain.repository.StoreInfoRepository;
+import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreServiceImp implements StoreService {
-  @Autowired private StoreInfoRepository storeInfoPrimaryRepo;
-  @Autowired private StoreInfoRepository storeInfoSecondaryRepo;
+  @Autowired private StoreInfoPrimaryRepo storeInfoPrimaryRepo;
+  @Autowired private StoreInfoPrimaryRepo storeInfoSecondaryRepo;
 
   @Override
   @Transactional("secondaryTransactionManager")

@@ -5,7 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -15,9 +17,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    // basePackages = "com.ssup2ket.store.domain.repository",
+    basePackages = "com.ssup2ket.store.domain.repository",
     entityManagerFactoryRef = "secondaryEntityManagerFactory",
-    transactionManagerRef = "secondaryTransactionManager")
+    transactionManagerRef = "secondaryTransactionManager",
+    includeFilters =
+        @ComponentScan.Filter(
+            type = FilterType.REGEX,
+            pattern = {".*Secondary.*"}))
 public class DataSourceSecondaryConfig {
   static String test = "test";
 
