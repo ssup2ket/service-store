@@ -57,13 +57,17 @@ public class ProductServiceImp implements ProductService {
 
   @Override
   @Transactional
-  public int increaseProductQuantity(UUID storeId, UUID productId, long increment) {
-    return 0;
+  public int increaseProductQuantity(UUID storeId, UUID productId, int increment) {
+    productInfoPrimaryRepo.incraseQuantity(productId, increment);
+    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
+    return productInfo.getQuantity();
   }
 
   @Override
   @Transactional
-  public int decreaseProductQuantity(UUID storeId, UUID productId, long decrement) {
-    return 0;
+  public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement) {
+    productInfoPrimaryRepo.decraseQuantity(productId, decrement);
+    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
+    return productInfo.getQuantity();
   }
 }

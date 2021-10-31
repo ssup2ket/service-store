@@ -19,7 +19,7 @@ public class HttpExceptionHandler extends ResponseEntityExceptionHandler {
       StoreNotFoundException exception, WebRequest request) {
     return handleExceptionInternal(
         exception,
-        HttpErrorBuilder.getResponse(ErrorCode.NOT_FOUND_INVEN, ""),
+        HttpErrorBuilder.getResponse(ErrorCode.NOT_FOUND_STORE, ""),
         new HttpHeaders(),
         HttpStatus.NOT_FOUND,
         request);
