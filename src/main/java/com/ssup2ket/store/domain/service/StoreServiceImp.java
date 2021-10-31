@@ -26,6 +26,7 @@ public class StoreServiceImp implements StoreService {
   @Transactional("secondaryTransactionManager")
   public List<StoreInfo> listStoreInfosByName(String name, int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
+
     return storeInfoSecondaryRepo.findByName(name, pageRequest);
   }
 
