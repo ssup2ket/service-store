@@ -32,18 +32,22 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
 	//implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 	implementation 'org.modelmapper:modelmapper:2.4.2'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
+	//implementation 'org.springframework.security:spring-security-web'
 	compileOnly 'io.github.lognet:grpc-spring-boot-starter:4.5.8'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -90,11 +94,11 @@ test {
 task initLocal(type: Exec) {
 	group 'Application'
 	description 'Setup up local development environment'
-	commandLine 'sh', '-c', 'docker run --network=host --name ssup2ket-store-local-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=local_store -d mysql:8.0'
+	commandLine 'sh', '-c', 'docker run --name ssup2ket-store-local-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=local_store -d mysql:8.0'
 }
 
 task bootRunEnv(type: Exec) {
 	group 'Application'
 	description 'Runs this project as a Spring Boot application with env'
-	commandLine 'sh', '-c', 'source ./scripts/env-local && exec ./gradlew bootRun'
+	commandLine 'sh', '-c', '. scripts/env-local && exec ./gradlew bootRun'
 }
