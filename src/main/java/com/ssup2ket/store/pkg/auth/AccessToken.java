@@ -1,6 +1,7 @@
 package com.ssup2ket.store.pkg.auth;
 
 import java.util.Collection;
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,7 +12,7 @@ public class AccessToken extends AbstractAuthenticationToken {
   public static final String ROLE_USER = "user";
 
   private String token;
-  private String userId;
+  private UUID userId;
   private String userLoginId;
   private String userRole;
 
@@ -22,7 +23,7 @@ public class AccessToken extends AbstractAuthenticationToken {
 
   public AccessToken(
       String token,
-      String userId,
+      UUID userId,
       String userLoginId,
       String userRole,
       Collection<? extends GrantedAuthority> authorities) {
@@ -35,7 +36,7 @@ public class AccessToken extends AbstractAuthenticationToken {
 
   @Override
   public String getPrincipal() {
-    return userId;
+    return userId.toString();
   }
 
   @Override

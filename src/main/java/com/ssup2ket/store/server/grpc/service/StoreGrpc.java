@@ -72,12 +72,12 @@ public class StoreGrpc extends StoreImplBase {
   }
 
   public StoreInfo convertStoreCreateReqToModel(StoreCreateReq request) {
-    return new StoreInfo(null, request.getName(), request.getDescription());
+    return new StoreInfo(null, request.getName(), request.getDescription(), null);
   }
 
   public StoreInfo convertStoreUpdateReqToModel(StoreUpdateReq request) {
     return new StoreInfo(
-        UUID.fromString(request.getId()), request.getName(), request.getDescription());
+        UUID.fromString(request.getId()), request.getName(), request.getDescription(), null);
   }
 
   public StoreInfoRes convertStoreInfoToRes(StoreInfo storeInfo) {

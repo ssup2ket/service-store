@@ -23,4 +23,7 @@ public class StoreInfo {
 
   @Length(max = 50)
   private String description;
+
+  @Column(columnDefinition = "BINARY(16)")
+  private UUID userId;
 }

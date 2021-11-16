@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -43,7 +44,12 @@ public class AccessTokenProvider implements AuthenticationProvider {
     Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
     grantedAuthorities.add(new SimpleGrantedAuthority(userRole));
     accessToken =
-        new AccessToken(accessToken.getToken(), userId, userLoginId, userRole, grantedAuthorities);
+        new AccessToken(
+            accessToken.getToken(),
+            UUID.fromString(userId),
+            userLoginId,
+            userRole,
+            grantedAuthorities);
     accessToken.setAuthenticated(true);
     return accessToken;
   }

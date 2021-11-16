@@ -2,11 +2,13 @@ package com.ssup2ket.store.domain.service;
 
 import com.ssup2ket.store.domain.model.StoreInfo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
+import com.ssup2ket.store.pkg.auth.AccessToken;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,10 @@ public class StoreServiceImp implements StoreService {
   @Override
   @Transactional
   public StoreInfo createStoreInfo(StoreInfo storeInfo) {
+    // Get user ID form access token and set user ID to store info
+    AccessToken accessToken = (AccessToken) SecurityContextHolder.getContext().getAuthentication();
+    storeInfo.setUserId(accessToken.getUserId());
+
     return storeInfoPrimaryRepo.save(storeInfo);
   }
 
