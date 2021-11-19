@@ -1,6 +1,9 @@
 package com.ssup2ket.store.domain.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import java.util.List;
@@ -12,8 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductServiceImp implements ProductService {
+  private static final String aggregateProuductType = "Product";
+
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
   @Autowired private ProductInfoPrimaryRepo productInfoSecondaryRepo;
+  @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
 
   @Override
   @Transactional("secondaryTransactionManager")
@@ -32,7 +38,26 @@ public class ProductServiceImp implements ProductService {
   @Override
   @Transactional
   public ProductInfo createProductInfo(ProductInfo productInfo) {
-    return productInfoPrimaryRepo.save(productInfo);
+    // Create product
+    productInfo = productInfoPrimaryRepo.save(productInfo);
+
+    // Create outbox for product creation event
+    try {
+      ObjectMapper jsonMapper = new ObjectMapper();
+      String productInfoJson = jsonMapper.writeValueAsString(productInfo);
+      Outbox outbox =
+          new Outbox(
+              null,
+              aggregateProuductType,
+              productInfo.getId().toString(),
+              "ProductCreate",
+              productInfoJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return productInfo;
   }
 
   @Override
@@ -52,7 +77,25 @@ public class ProductServiceImp implements ProductService {
   @Override
   @Transactional
   public void deleteProductInfo(UUID storeId, UUID productId) {
+    // Get and delete product
+    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
     productInfoPrimaryRepo.deleteById(productId);
+
+    // Create outbox for product deletion event
+    try {
+      ObjectMapper jsonMapper = new ObjectMapper();
+      String productInfoJson = jsonMapper.writeValueAsString(productInfo);
+      Outbox outbox =
+          new Outbox(
+              null,
+              aggregateProuductType,
+              productInfo.getId().toString(),
+              "ProductDelete",
+              productInfoJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

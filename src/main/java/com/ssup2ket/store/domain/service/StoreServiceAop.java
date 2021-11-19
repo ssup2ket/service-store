@@ -27,7 +27,7 @@ public class StoreServiceAop {
     // Get store UUID
     UUID storeId;
     if (joinPoint.getArgs()[0] instanceof UUID) {
-      storeId = (UUID) joinPoint.getArgs()[1];
+      storeId = (UUID) joinPoint.getArgs()[0];
     } else if (joinPoint.getArgs()[0] instanceof StoreInfo) {
       storeId = ((StoreInfo) joinPoint.getArgs()[0]).getId();
     } else {

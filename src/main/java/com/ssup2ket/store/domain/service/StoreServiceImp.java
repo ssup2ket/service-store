@@ -1,6 +1,9 @@
 package com.ssup2ket.store.domain.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.StoreInfo;
+import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import com.ssup2ket.store.pkg.auth.AccessToken;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
@@ -14,8 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreServiceImp implements StoreService {
+  private static final String aggregateStoreType = "Store";
+
   @Autowired private StoreInfoPrimaryRepo storeInfoPrimaryRepo;
   @Autowired private StoreInfoPrimaryRepo storeInfoSecondaryRepo;
+  @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
 
   @Override
   @Transactional("secondaryTransactionManager")
@@ -39,6 +45,21 @@ public class StoreServiceImp implements StoreService {
     AccessToken accessToken = (AccessToken) SecurityContextHolder.getContext().getAuthentication();
     storeInfo.setUserId(accessToken.getUserId());
 
+    // Create store
+    storeInfo = storeInfoPrimaryRepo.save(storeInfo);
+
+    // Create outbox for store creation event
+    try {
+      ObjectMapper jsonMapper = new ObjectMapper();
+      String storeInfoJson = jsonMapper.writeValueAsString(storeInfo);
+      Outbox outbox =
+          new Outbox(
+              null, aggregateStoreType, storeInfo.getId().toString(), "StoreCreate", storeInfoJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     return storeInfoPrimaryRepo.save(storeInfo);
   }
 
@@ -59,6 +80,20 @@ public class StoreServiceImp implements StoreService {
   @Override
   @Transactional
   public void deleteStoreInfo(UUID storeId) {
+    // Get and delete store
+    StoreInfo storeInfo = storeInfoPrimaryRepo.getById(storeId);
     storeInfoPrimaryRepo.deleteById(storeId);
+
+    // Create outbox for store deletion event
+    try {
+      ObjectMapper jsonMapper = new ObjectMapper();
+      String storeInfoJson = jsonMapper.writeValueAsString(storeInfo);
+      Outbox outbox =
+          new Outbox(
+              null, aggregateStoreType, storeInfo.getId().toString(), "StoreDelete", storeInfoJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

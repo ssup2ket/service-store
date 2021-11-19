@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 @Entity
-@Builder
 @Getter
 @Setter
 @NoArgsConstructor

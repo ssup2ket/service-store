@@ -8,21 +8,24 @@ import org.hibernate.validator.constraints.Length;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "stores")
-public class StoreInfo {
+@NoArgsConstructor
+@Table(name = "outboxes")
+public class Outbox {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")
   private UUID id;
 
-  @Length(max = 30)
-  private String name;
+  @Length(max = 255)
+  private String aggregateType;
 
-  @Length(max = 50)
-  private String description;
+  @Length(max = 255)
+  private String aggregateId;
 
-  @Column(columnDefinition = "BINARY(16)")
-  private UUID userId;
+  @Length(max = 255)
+  private String type;
+
+  @Length(max = 255)
+  private String payLoad;
 }
