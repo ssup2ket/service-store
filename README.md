@@ -6,6 +6,12 @@
 * Multiple Datasource - https://www.baeldung.com/spring-data-jpa-multiple-databases
 * Multiple Datasource - https://gigas-blog.tistory.com/122
 
+* Kafka - https://howtodoinjava.com/kafka/spring-boot-jsonserializer-example/
+* Kakfa - https://www.baeldung.com/spring-kafka
+* Kafka - https://www.quora.com/What-is-the-difference-between-acknowledgement-and-commit-in-Kafka
+* Kafka - https://stackoverflow.com/questions/40872520/whats-the-purpose-of-kafkas-key-value-pair-based-messaging
+* kafka - https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html
+
 * Spring Data JPA - https://www.baeldung.com/spring-data-jpa-query
 
 * GRPC - https://github.com/LogNet/grpc-spring-boot-starter

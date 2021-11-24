@@ -91,10 +91,17 @@ test {
 }
 
 // Custom tasks
-task initLocal(type: Exec) {
+task initLocal {
 	group 'Application'
 	description 'Setup up local development environment'
-	commandLine 'sh', '-c', 'docker run --name ssup2ket-store-local-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=local_store -d mysql:8.0'
+	doLast {
+		exec {
+			commandLine 'sh', '-c', 'docker run --name ssup2ket-store-local-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=local_store -d mysql:8.0'
+		}
+		exec {
+			commandLine 'sh', '-c', 'docker-compose -f scripts/kafka-compose.yaml up -d'
+		}
+	}
 }
 
 task bootRunEnv(type: Exec) {

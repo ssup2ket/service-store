@@ -4,12 +4,16 @@ export DEPLOY_ENV=local
 # MySQL
 export MYSQL_DATABASE=local_store
 
-export MYSQL_PRIMARY_IP=127.0.0.1
+export MYSQL_PRIMARY_IP=localhost
 export MYSQL_PRIMARY_PORT=3306
 export MYSQL_PRIMARY_USER=root
 export MYSQL_PRIMARY_PASSWORD=root
 
-export MYSQL_SECONDARY_IP=127.0.0.1
+export MYSQL_SECONDARY_IP=localhost
 export MYSQL_SECONDARY_PORT=3306
 export MYSQL_SECONDARY_USER=root
 export MYSQL_SECONDARY_PASSWORD=root
+
+# Kafka
+export KAFKA_CONSUMER_IP=localhost
+export KAFKA_CONSUMER_PORT=9092
