@@ -60,7 +60,7 @@ public class StoreServiceImp implements StoreService {
               null, aggregateStoreType, storeInfo.getId().toString(), "StoreCreate", storeInfoJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
 
     return storeInfoPrimaryRepo.save(storeInfo);
@@ -99,7 +99,7 @@ public class StoreServiceImp implements StoreService {
               null, aggregateStoreType, storeInfo.getId().toString(), "StoreDelete", storeInfoJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 

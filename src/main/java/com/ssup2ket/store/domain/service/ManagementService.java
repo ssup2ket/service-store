@@ -1,7 +1,7 @@
 package com.ssup2ket.store.domain.service;
 
-import com.ssup2ket.store.domain.model.UserInfoRemoved;
+import com.ssup2ket.store.domain.model.Inbox;
 
 public interface ManagementService {
-  public void deleteStoreProudctByRemovedUser(UserInfoRemoved userInfo);
+  public void deleteStoreProudctByRemovedUser(Inbox inbox);
 }

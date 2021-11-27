@@ -8,17 +8,21 @@ import org.hibernate.validator.constraints.Length;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users_removed")
-public class UserInfoRemoved {
+@NoArgsConstructor
+@Table(name = "inboxes")
+public class Inbox {
   @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")
   private UUID id;
 
-  @Length(max = 20)
-  private String loginId;
+  @Length(max = 255)
+  private String aggregateType;
 
-  @Length(max = 10)
-  private String role;
+  @Length(max = 255)
+  private String type;
+
+  @Length(max = 255)
+  private String payload;
 }

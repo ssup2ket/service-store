@@ -55,7 +55,7 @@ public class ProductServiceImp implements ProductService {
               productInfoJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
 
     return productInfo;
@@ -95,7 +95,7 @@ public class ProductServiceImp implements ProductService {
               productInfoJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 

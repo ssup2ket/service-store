@@ -1,9 +1,9 @@
 package com.ssup2ket.store.server.kafka.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssup2ket.store.domain.model.UserInfoRemoved;
+import com.ssup2ket.store.domain.model.Inbox;
 import com.ssup2ket.store.domain.service.ManagementService;
-import com.ssup2ket.store.server.kafka.model.InBox;
+import com.ssup2ket.store.server.kafka.message.DebezOutbox;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
@@ -11,22 +11,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserConsumer {
+  private static final String AGGREGATE_TYPE = "User";
+  private static final String EVENT_TYPE_DELETE = "UserDelete";
+
   @Autowired private ManagementService managementService;
 
   @KafkaListener(topics = "outbox.event.User", groupId = "user")
-  public void consume(@Header("id") String msgId, InBox inbox) {
-    if (inbox.getEventType() == "UserDelete") {
-      try {
-        // Get removed user info
-        ObjectMapper objectMapper = new ObjectMapper();
-        UserInfoRemoved userInfo =
-            objectMapper.readValue(inbox.getPayload(), UserInfoRemoved.class);
+  public void consume(@Header("id") String msgId, DebezOutbox msg) {
+    if (msg.getEventType() == "UserDelete") {
+      // Convert debezium outbox message to inbox
+      Inbox inbox =
+          new Inbox(UUID.fromString(msgId), AGGREGATE_TYPE, EVENT_TYPE_DELETE, msg.getPayload());
 
-        // Remove all stores and products owned by deleted user
-        managementService.deleteStoreProudctByRemovedUser(userInfo);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      // Call service
+      managementService.deleteStoreProudctByRemovedUser(inbox);
     }
   }
 }

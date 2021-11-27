@@ -14,8 +14,6 @@ import org.springframework.stereotype.Repository;
 public interface ProductInfoPrimaryRepo extends JpaRepository<ProductInfo, UUID> {
   public List<ProductInfo> findByName(String name, Pageable pageable);
 
-  public List<ProductInfo> findByStoreId(UUID storeId);
-
   public void deleteByStoreId(UUID storeId);
 
   @Modifying

@@ -27,5 +27,5 @@ public class Outbox {
   private String type;
 
   @Length(max = 255)
-  private String payLoad;
+  private String payload;
 }

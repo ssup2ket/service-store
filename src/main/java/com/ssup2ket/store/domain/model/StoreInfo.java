@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "removed_users")
+@Table(name = "stores")
 public class StoreInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
