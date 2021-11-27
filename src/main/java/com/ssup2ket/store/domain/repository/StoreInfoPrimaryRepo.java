@@ -10,4 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StoreInfoPrimaryRepo extends JpaRepository<StoreInfo, UUID> {
   public List<StoreInfo> findByName(String name, Pageable pageable);
+
+  public List<StoreInfo> findByUserId(UUID userId);
+
+  public void deleteByUserId(UUID userId);
 }

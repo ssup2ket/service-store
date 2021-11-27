@@ -33,7 +33,7 @@ public class ProductController {
   private final String uuidRegExp =
       "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
-  @Autowired private ProductService service;
+  @Autowired private ProductService productService;
   @Autowired private ModelMapper modelMapper;
 
   @GetMapping("/stores/{storeId}/products")
@@ -42,7 +42,7 @@ public class ProductController {
       @RequestParam(value = "offset", defaultValue = "0") int offset,
       @RequestParam(value = "limit", defaultValue = "50") int limit) {
     return convertProductInfoListResToDto(
-        service.listProductInfos(UUID.fromString(storeId), offset / limit, limit));
+        productService.listProductInfos(UUID.fromString(storeId), offset / limit, limit));
   }
 
   @PostMapping("/stores/{storeId}/products")
@@ -54,7 +54,7 @@ public class ProductController {
     req.setStoreId(UUID.fromString(storeId));
 
     // Create product
-    ProductInfo resProductInfo = service.createProductInfo(req);
+    ProductInfo resProductInfo = productService.createProductInfo(req);
     return convertProductInfoResToDto(resProductInfo);
   }
 
@@ -62,7 +62,8 @@ public class ProductController {
   ProductInfoRes getProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
-    ProductInfo res = service.getProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
+    ProductInfo res =
+        productService.getProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
     return convertProductInfoResToDto(res);
   }
 
@@ -74,14 +75,14 @@ public class ProductController {
     ProductInfo req = convertProductInfoReqToModel(request);
     req.setStoreId(UUID.fromString(storeId));
     req.setId(UUID.fromString(productId));
-    service.updateProductInfo(req);
+    productService.updateProductInfo(req);
   }
 
   @DeleteMapping("/stores/{storeId}/products/{productId}")
   void deleteProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
-    service.deleteProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
+    productService.deleteProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
   }
 
   @PostMapping("/stores/{storeId}/products/{productId}/quantity/increase")
@@ -91,7 +92,7 @@ public class ProductController {
       @RequestBody @Valid ProductQuantityReq request) {
     return convertProductQuantityResToDto(
         productId,
-        service.increaseProductQuantity(
+        productService.increaseProductQuantity(
             UUID.fromString(storeId), UUID.fromString(productId), request.getQuantity()));
   }
 
@@ -102,7 +103,7 @@ public class ProductController {
       @RequestBody @Valid ProductQuantityReq request) {
     return convertProductQuantityResToDto(
         storeId,
-        service.decreaseProductQuantity(
+        productService.decreaseProductQuantity(
             UUID.fromString(storeId), UUID.fromString(productId), request.getQuantity()));
   }
 

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.StoreInfo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
+import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
+import com.ssup2ket.store.domain.repository.StoreInfoSecondaryRepo;
 import com.ssup2ket.store.pkg.auth.AccessToken;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.List;
@@ -20,7 +22,8 @@ public class StoreServiceImp implements StoreService {
   private static final String aggregateStoreType = "Store";
 
   @Autowired private StoreInfoPrimaryRepo storeInfoPrimaryRepo;
-  @Autowired private StoreInfoPrimaryRepo storeInfoSecondaryRepo;
+  @Autowired private StoreInfoSecondaryRepo storeInfoSecondaryRepo;
+  @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
   @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
 
   @Override
@@ -80,6 +83,9 @@ public class StoreServiceImp implements StoreService {
   @Override
   @Transactional
   public void deleteStoreInfo(UUID storeId) {
+    // Delete all products owned by store
+    productInfoPrimaryRepo.deleteByStoreId(storeId);
+
     // Get and delete store
     StoreInfo storeInfo = storeInfoPrimaryRepo.getById(storeId);
     storeInfoPrimaryRepo.deleteById(storeId);
@@ -96,4 +102,7 @@ public class StoreServiceImp implements StoreService {
       e.printStackTrace();
     }
   }
+
+  @Override
+  public void deleteStoreInfoByOwnerID(String msgId, UUID ownerId) {}
 }

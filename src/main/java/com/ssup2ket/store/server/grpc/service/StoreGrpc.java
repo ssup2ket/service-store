@@ -14,14 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @GRpcService
 public class StoreGrpc extends StoreImplBase {
-  @Autowired StoreService service;
+  @Autowired StoreService storeService;
 
   @Override
   public void listStore(StoreListReq request, StreamObserver<StoreListRes> responseObserver) {
     try {
       StoreListRes res =
           convertStoreInfoListResToRes(
-              service.listStoreInfos(request.getOffset() / request.getLimit(), request.getLimit()));
+              storeService.listStoreInfos(
+                  request.getOffset() / request.getLimit(), request.getLimit()));
       responseObserver.onNext(res);
       responseObserver.onCompleted();
     } catch (Throwable t) {
@@ -33,7 +34,7 @@ public class StoreGrpc extends StoreImplBase {
   public void createStore(StoreCreateReq request, StreamObserver<StoreInfoRes> responseObserver) {
     try {
       StoreInfo req = convertStoreCreateReqToModel(request);
-      StoreInfo res = service.createStoreInfo(req);
+      StoreInfo res = storeService.createStoreInfo(req);
       responseObserver.onNext(convertStoreInfoToRes(res));
       responseObserver.onCompleted();
     } catch (Throwable t) {
@@ -43,7 +44,7 @@ public class StoreGrpc extends StoreImplBase {
 
   @Override
   public void getStore(StoreIdReq request, StreamObserver<StoreInfoRes> responseObserver) {
-    StoreInfo storeInfo = service.getStoreInfo(UUID.fromString(request.getId()));
+    StoreInfo storeInfo = storeService.getStoreInfo(UUID.fromString(request.getId()));
     responseObserver.onNext(convertStoreInfoToRes(storeInfo));
     responseObserver.onCompleted();
   }
@@ -52,7 +53,7 @@ public class StoreGrpc extends StoreImplBase {
   public void updateStore(StoreUpdateReq request, StreamObserver<Empty> responseObserver) {
     try {
       StoreInfo reqStoreInfo = convertStoreUpdateReqToModel(request);
-      service.updateStoreInfo(reqStoreInfo);
+      storeService.updateStoreInfo(reqStoreInfo);
       responseObserver.onNext(Empty.newBuilder().build());
       responseObserver.onCompleted();
     } catch (Throwable t) {
@@ -63,7 +64,7 @@ public class StoreGrpc extends StoreImplBase {
   @Override
   public void deleteStore(StoreIdReq request, StreamObserver<Empty> responseObserver) {
     try {
-      service.deleteStoreInfo(UUID.fromString(request.getId()));
+      storeService.deleteStoreInfo(UUID.fromString(request.getId()));
       responseObserver.onNext(Empty.newBuilder().build());
       responseObserver.onCompleted();
     } catch (Throwable t) {

@@ -5,6 +5,7 @@ import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.ProductInfo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
+import com.ssup2ket.store.domain.repository.ProductInfoSecondaryRepo;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class ProductServiceImp implements ProductService {
   private static final String aggregateProuductType = "Product";
 
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
-  @Autowired private ProductInfoPrimaryRepo productInfoSecondaryRepo;
+  @Autowired private ProductInfoSecondaryRepo productInfoSecondaryRepo;
   @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
 
   @Override

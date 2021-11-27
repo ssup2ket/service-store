@@ -10,19 +10,15 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "removed_users")
-public class StoreInfo {
+@Table(name = "users_removed")
+public class UserInfoRemoved {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")
   private UUID id;
 
-  @Length(max = 30)
-  private String name;
+  @Length(max = 20)
+  private String loginId;
 
-  @Length(max = 50)
-  private String description;
-
-  @Column(columnDefinition = "BINARY(16)")
-  private UUID userId;
+  @Length(max = 10)
+  private String role;
 }

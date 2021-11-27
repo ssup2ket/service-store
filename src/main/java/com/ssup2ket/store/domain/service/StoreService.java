@@ -16,4 +16,6 @@ public interface StoreService {
   public void updateStoreInfo(StoreInfo storeInfo);
 
   public void deleteStoreInfo(UUID storeId);
+
+  public void deleteStoreInfoByOwnerID(String msgId, UUID ownerId);
 }

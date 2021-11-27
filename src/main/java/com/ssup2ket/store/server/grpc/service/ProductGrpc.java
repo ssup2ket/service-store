@@ -14,14 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @GRpcService
 public class ProductGrpc extends ProductImplBase {
-  @Autowired ProductService service;
+  @Autowired ProductService productService;
 
   @Override
   public void listProduct(ProductListReq request, StreamObserver<ProductListRes> responseObserver) {
     try {
       ProductListRes res =
           convertProductInfoListResToRes(
-              service.listProductInfos(
+              productService.listProductInfos(
                   UUID.fromString(request.getStoreId()),
                   request.getOffset() / request.getLimit(),
                   request.getLimit()));
@@ -36,7 +36,7 @@ public class ProductGrpc extends ProductImplBase {
   public void createProduct(
       ProductCreateReq request, StreamObserver<ProductInfoRes> responseObserver) {
     ProductInfo req = convertProductCreateReqToModel(request);
-    ProductInfo res = service.createProductInfo(req);
+    ProductInfo res = productService.createProductInfo(req);
     responseObserver.onNext(convertProductInfoToRes(res));
     responseObserver.onCompleted();
   }
@@ -44,7 +44,7 @@ public class ProductGrpc extends ProductImplBase {
   @Override
   public void getProduct(ProductIdReq request, StreamObserver<ProductInfoRes> responseObserver) {
     ProductInfo storeInfo =
-        service.getProductInfo(
+        productService.getProductInfo(
             UUID.fromString(request.getStoreId()), UUID.fromString(request.getId()));
     responseObserver.onNext(convertProductInfoToRes(storeInfo));
     responseObserver.onCompleted();
@@ -53,14 +53,14 @@ public class ProductGrpc extends ProductImplBase {
   @Override
   public void updateProduct(ProductUpdateReq request, StreamObserver<Empty> responseObserver) {
     ProductInfo reqProductInfo = convertProductUpdateReqToModel(request);
-    service.updateProductInfo(reqProductInfo);
+    productService.updateProductInfo(reqProductInfo);
     responseObserver.onNext(Empty.newBuilder().build());
     responseObserver.onCompleted();
   }
 
   @Override
   public void deleteProduct(ProductIdReq request, StreamObserver<Empty> responseObserver) {
-    service.deleteProductInfo(
+    productService.deleteProductInfo(
         UUID.fromString(request.getStoreId()), UUID.fromString(request.getId()));
     responseObserver.onNext(Empty.newBuilder().build());
     responseObserver.onCompleted();

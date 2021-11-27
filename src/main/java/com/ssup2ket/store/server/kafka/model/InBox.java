@@ -6,5 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class InBox {
+  private String schema;
   private String payload;
+  private String eventType;
 }

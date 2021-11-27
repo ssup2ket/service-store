@@ -31,26 +31,26 @@ public class StoreController {
   private final String uuidRegExp =
       "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
-  @Autowired private StoreService service;
+  @Autowired private StoreService storeService;
   @Autowired private ModelMapper modelMapper;
 
   @GetMapping("/stores")
   StoreInfoListRes listStore(
       @RequestParam(value = "offset", defaultValue = "0") int offset,
       @RequestParam(value = "limit", defaultValue = "50") int limit) {
-    return convertStoreInfoListResToDto(service.listStoreInfos(offset / limit, limit));
+    return convertStoreInfoListResToDto(storeService.listStoreInfos(offset / limit, limit));
   }
 
   @PostMapping("/stores")
   StoreInfoRes createStore(@RequestBody @Valid StoreInfoReq request) {
     StoreInfo req = convertStoreInfoReqToModel(request);
-    StoreInfo res = service.createStoreInfo(req);
+    StoreInfo res = storeService.createStoreInfo(req);
     return convertStoreInfoResToDto(res);
   }
 
   @GetMapping("/stores/{storeId}")
   StoreInfoRes getStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
-    StoreInfo resStoreInfo = service.getStoreInfo(UUID.fromString(storeId));
+    StoreInfo resStoreInfo = storeService.getStoreInfo(UUID.fromString(storeId));
     return convertStoreInfoResToDto(resStoreInfo);
   }
 
@@ -60,12 +60,12 @@ public class StoreController {
       @RequestBody @Valid StoreInfoReq request) {
     StoreInfo reqProductInfo = convertStoreInfoReqToModel(request);
     reqProductInfo.setId(UUID.fromString(storeId));
-    service.updateStoreInfo(reqProductInfo);
+    storeService.updateStoreInfo(reqProductInfo);
   }
 
   @DeleteMapping("/stores/{storeId}")
   void deleteStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
-    service.deleteStoreInfo(UUID.fromString(storeId));
+    storeService.deleteStoreInfo(UUID.fromString(storeId));
   }
 
   public StoreInfo convertStoreInfoReqToModel(StoreInfoReq request) {
