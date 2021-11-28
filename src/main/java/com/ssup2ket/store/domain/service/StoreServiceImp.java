@@ -1,5 +1,6 @@
 package com.ssup2ket.store.domain.service;
 
+import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.StoreInfo;
@@ -11,12 +12,14 @@ import com.ssup2ket.store.pkg.auth.AccessToken;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Log4j2
 @Service
 public class StoreServiceImp implements StoreService {
   private static final String aggregateStoreType = "Store";
@@ -25,6 +28,7 @@ public class StoreServiceImp implements StoreService {
   @Autowired private StoreInfoSecondaryRepo storeInfoSecondaryRepo;
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
   @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
+  @Autowired private Tracer tracer;
 
   @Override
   @Transactional("secondaryTransactionManager")

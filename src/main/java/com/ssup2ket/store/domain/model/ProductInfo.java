@@ -1,5 +1,6 @@
 package com.ssup2ket.store.domain.model;
 
+import com.ssup2ket.store.pkg.model.BaseCreatedUpdatedModel;
 import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -12,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
-public class ProductInfo {
+public class ProductInfo extends BaseCreatedUpdatedModel {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")
