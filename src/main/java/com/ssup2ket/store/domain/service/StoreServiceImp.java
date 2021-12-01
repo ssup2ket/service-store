@@ -1,7 +1,7 @@
 package com.ssup2ket.store.domain.service;
 
 import brave.Tracer;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.StoreInfo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
@@ -9,17 +9,16 @@ import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoSecondaryRepo;
 import com.ssup2ket.store.pkg.auth.AccessToken;
+import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.List;
 import java.util.UUID;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Log4j2
 @Service
 public class StoreServiceImp implements StoreService {
   private static final String aggregateStoreType = "Store";
@@ -55,19 +54,26 @@ public class StoreServiceImp implements StoreService {
     // Create store
     storeInfo = storeInfoPrimaryRepo.save(storeInfo);
 
-    // Create outbox for store creation event
     try {
-      ObjectMapper jsonMapper = new ObjectMapper();
-      String storeInfoJson = jsonMapper.writeValueAsString(storeInfo);
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for store creation event
       Outbox outbox =
           new Outbox(
-              null, aggregateStoreType, storeInfo.getId().toString(), "StoreCreate", storeInfoJson);
+              null,
+              aggregateStoreType,
+              storeInfo.getId().toString(),
+              "StoreCreate",
+              storeInfo.toJsonString(),
+              spanContextJson);
       outboxPrimaryRepo.save(outbox);
-    } catch (Exception e) {
+    } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
 
-    return storeInfoPrimaryRepo.save(storeInfo);
+    // Return
+    return storeInfo;
   }
 
   @Override
@@ -94,13 +100,19 @@ public class StoreServiceImp implements StoreService {
     StoreInfo storeInfo = storeInfoPrimaryRepo.getById(storeId);
     storeInfoPrimaryRepo.deleteById(storeId);
 
-    // Create outbox for store deletion event
     try {
-      ObjectMapper jsonMapper = new ObjectMapper();
-      String storeInfoJson = jsonMapper.writeValueAsString(storeInfo);
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for store deletion event
       Outbox outbox =
           new Outbox(
-              null, aggregateStoreType, storeInfo.getId().toString(), "StoreDelete", storeInfoJson);
+              null,
+              aggregateStoreType,
+              storeInfo.getId().toString(),
+              "StoreDelete",
+              storeInfo.toJsonString(),
+              spanContextJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
       throw new RuntimeException(e);

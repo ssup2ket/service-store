@@ -23,6 +23,12 @@
 * Spring Security - https://gregor77.github.io/2021/05/18/spring-security-03/
 * Spring Security - https://brunch.co.kr/@springboot/491
 
+* OpenTracing - https://opentracing.io/guides/java/
+* OpenTracing - https://github.com/opentracing-contrib/java-spring-cloud
+* OpenTracing - https://faun.pub/enhance-istio-distributed-tracing-with-opentracing-part-1-3c4f3ee918d
+* OpenTracing - https://medium.com/@zhaohuabing/enhance-istio-distributed-tracing-with-opentracing-part-2-3d2643b571a2
+* OpenTracing - https://github.com/debezium/debezium/blob/main/debezium-core/src/main/java/io/debezium/transforms/tracing/DebeziumTextMap.java
+
 * JSON Log - https://gist.github.com/NBParis/8bda7aea745987dd3261d475c613cf66
 
 * Swagger - https://blog2.deliwind.com/20201127/java-swagger-ui-3-0-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0/

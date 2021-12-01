@@ -1,5 +1,7 @@
 package com.ssup2ket.store.domain.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssup2ket.store.pkg.model.BaseCreatedUpdatedModel;
 import java.util.UUID;
 import javax.persistence.*;
@@ -30,4 +32,9 @@ public class ProductInfo extends BaseCreatedUpdatedModel {
 
   @Min(0)
   private int quantity;
+
+  public String toJsonString() throws JsonProcessingException {
+    ObjectMapper jsonMapper = new ObjectMapper();
+    return jsonMapper.writeValueAsString(this);
+  }
 }

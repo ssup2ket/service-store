@@ -1,11 +1,13 @@
 package com.ssup2ket.store.domain.service;
 
+import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.ProductInfo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoSecondaryRepo;
+import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +23,7 @@ public class ProductServiceImp implements ProductService {
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
   @Autowired private ProductInfoSecondaryRepo productInfoSecondaryRepo;
   @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
+  @Autowired private Tracer tracer;
 
   @Override
   @Transactional("secondaryTransactionManager")
@@ -42,8 +45,11 @@ public class ProductServiceImp implements ProductService {
     // Create product
     productInfo = productInfoPrimaryRepo.save(productInfo);
 
-    // Create outbox for product creation event
     try {
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for product creation event
       ObjectMapper jsonMapper = new ObjectMapper();
       String productInfoJson = jsonMapper.writeValueAsString(productInfo);
       Outbox outbox =
@@ -52,12 +58,14 @@ public class ProductServiceImp implements ProductService {
               aggregateProuductType,
               productInfo.getId().toString(),
               "ProductCreate",
-              productInfoJson);
+              productInfoJson,
+              spanContextJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
 
+    // return
     return productInfo;
   }
 
@@ -82,17 +90,19 @@ public class ProductServiceImp implements ProductService {
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
     productInfoPrimaryRepo.deleteById(productId);
 
-    // Create outbox for product deletion event
     try {
-      ObjectMapper jsonMapper = new ObjectMapper();
-      String productInfoJson = jsonMapper.writeValueAsString(productInfo);
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for product deletion event
       Outbox outbox =
           new Outbox(
               null,
               aggregateProuductType,
               productInfo.getId().toString(),
               "ProductDelete",
-              productInfoJson);
+              productInfo.toJsonString(),
+              spanContextJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
       throw new RuntimeException(e);
