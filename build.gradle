@@ -108,3 +108,21 @@ task bootRunEnv(type: Exec) {
 	description 'Runs this project as a Spring Boot application with env'
 	commandLine 'sh', '-c', '. scripts/env-local && exec ./gradlew bootRun'
 }
+
+task buildDockerfile(type: Exec) {
+	group 'Build'
+	description 'Builds an Container Image from Dockerfile'
+	commandLine 'sh', '-c', './gradlew bootJar && docker build .'
+}
+
+task checkEnv(type: Exec) {
+	group 'Verification'
+	description 'Runs all checks with env'
+	commandLine 'sh', '-c', '. scripts/env-local && ./gradlew test'
+}
+
+task testEnv(type: Exec) {
+	group 'Verification'
+	description 'Runs the unit tests with env'
+	commandLine 'sh', '-c', '. scripts/env-local && ./gradlew test'
+}
