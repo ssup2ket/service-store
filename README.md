@@ -46,5 +46,9 @@
   * https://www.javainuse.com/spring/boot_swagger
   * https://medium.com/@jinnyjinnyjinjin/java-spring-boot-swagger-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0-4f83029bd57b
 
+* Test
+  * https://www.baeldung.com/spring-data-disable-auto-config
+
 * Dockerfile
+  * https://baeji77.github.io/spring/dev/Spring-boot-gradle-build/
   * https://www.baeldung.com/spring-boot-docker-images

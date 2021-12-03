@@ -13,7 +13,7 @@ plugins {
 
 group = 'com.ssup2ket'
 version = 'v1'
-sourceCompatibility = '17'
+sourceCompatibility = '11'
 
 configurations {
 	compileOnly {
@@ -85,6 +85,10 @@ sourceSets {
     }
 }
 
+bootJar {
+    layered()
+}
+
 test {
 	useJUnitPlatform()
 }
@@ -125,4 +129,17 @@ task testEnv(type: Exec) {
 	group 'Verification'
 	description 'Runs the unit tests with env'
 	commandLine 'sh', '-c', '. scripts/env-local && ./gradlew test'
+}
+
+task testIntegrationEnv(type: Exec) {
+	group 'Verification'
+	description 'Runs the integration tests with env'
+	commandLine 'sh', '-c', 'scripts/test-http-server.sh && scripts/test-grpc-server.sh'
+}
+
+task testAction(type: Exec) {
+	group 'Verification'
+	description 'Runs tests through act (github action)'
+	commandLine 'sh', '-c', 'act push --workflows ./.github/workflows/test-unit.yml -P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04'
+	commandLine 'sh', '-c', 'act workflow_run --workflows ./.github/workflows/test-integration.yml -P ubuntu-20.04=ghcr.io/catthehacker/ubuntu:act-20.04'
 }
