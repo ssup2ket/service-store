@@ -17,3 +17,7 @@ export MYSQL_SECONDARY_PASSWORD=root
 # Kafka
 export KAFKA_CONSUMER_IP=localhost
 export KAFKA_CONSUMER_PORT=9092
+
+# Zipkin
+export ZIPKIN_ENABLED=false
+export ZIPKIN_BASE_URL=""
