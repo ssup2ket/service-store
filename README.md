@@ -31,6 +31,9 @@
   * https://gregor77.github.io/2021/05/18/spring-security-03/
   * https://brunch.co.kr/@springboot/491
 
+* Spring Actuator
+  * https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html
+
 * OpenTracing
   * https://opentracing.io/guides/java/
   * https://github.com/opentracing-contrib/java-spring-cloud
