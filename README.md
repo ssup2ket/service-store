@@ -41,8 +41,9 @@
   * https://medium.com/@zhaohuabing/enhance-istio-distributed-tracing-with-opentracing-part-2-3d2643b571a2
   * https://github.com/debezium/debezium/blob/main/debezium-core/src/main/java/io/debezium/transforms/tracing/DebeziumTextMap.java
 
-* JSON  
-  * https://gist.github.com/NBParis/8bda7aea745987dd3261d475c613cf66
+* Logging JSON
+  * https://stackoverflow.com/questions/53730449/is-there-a-recommended-way-to-get-spring-boot-to-json-format-logs-with-logback
+  * https://github.com/logfellow/logstash-logback-encoder
 
 * Swagger
   * https://blog2.deliwind.com/20201127/java-swagger-ui-3-0-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0/
