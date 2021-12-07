@@ -30,30 +30,30 @@ ext {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.kafka:spring-kafka'
-	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
-	implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
+	implementation 'org.springframework.boot:spring-boot-starter-aop:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-security:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.6'
+	implementation 'org.springframework.kafka:spring-kafka:2.8.0'
+	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth:3.1.0'
+	implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin:3.1.0'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 	implementation 'org.modelmapper:modelmapper:2.4.2'
 	implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
 	compileOnly 'io.github.lognet:grpc-spring-boot-starter:4.5.8'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'mysql:mysql-connector-java'
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+	runtimeOnly 'mysql:mysql-connector-java:8.0.27'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
-	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.kafka:spring-kafka-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+	testImplementation 'org.springframework.security:spring-security-test:5.6.0'
+	testImplementation 'org.springframework.kafka:spring-kafka-test:2.8.0'
 }
 
 dependencyManagement {

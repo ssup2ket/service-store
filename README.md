@@ -37,6 +37,7 @@
 * OpenTracing
   * https://opentracing.io/guides/java/
   * https://github.com/opentracing-contrib/java-spring-cloud
+  * https://stackoverflow.com/questions/41222405/adding-the-traceid-from-spring-cloud-sleuth-to-response
   * https://faun.pub/enhance-istio-distributed-tracing-with-opentracing-part-1-3c4f3ee918d
   * https://medium.com/@zhaohuabing/enhance-istio-distributed-tracing-with-opentracing-part-2-3d2643b571a2
   * https://github.com/debezium/debezium/blob/main/debezium-core/src/main/java/io/debezium/transforms/tracing/DebeziumTextMap.java
