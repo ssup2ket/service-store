@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class AccessTokenProvider implements AuthenticationProvider {
   public static final String TOKEN_KEY =
@@ -34,6 +36,7 @@ public class AccessTokenProvider implements AuthenticationProvider {
               .parseClaimsJws(accessToken.getToken())
               .getBody();
     } catch (Exception e) {
+      log.error("wrong access token");
       throw new BadCredentialsException("wrong access token");
     }
     String userId = (String) claims.get(USER_ID);
