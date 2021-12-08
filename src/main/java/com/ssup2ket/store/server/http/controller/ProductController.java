@@ -7,6 +7,7 @@ import com.ssup2ket.store.server.http.dto.ProductInfoReq;
 import com.ssup2ket.store.server.http.dto.ProductInfoRes;
 import com.ssup2ket.store.server.http.dto.ProductQuantityReq;
 import com.ssup2ket.store.server.http.dto.ProductQuantityRes;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,9 +27,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/v1")
 @Validated
+@RestController
+@RequestMapping(path = "/v1/stores/{storeId}/products")
+@Tag(name = "Product")
 public class ProductController {
   private final String uuidRegExp =
       "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
@@ -36,7 +38,7 @@ public class ProductController {
   @Autowired private ProductService productService;
   @Autowired private ModelMapper modelMapper;
 
-  @GetMapping("/stores/{storeId}/products")
+  @GetMapping(value = "/")
   ProductInfoListRes listProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestParam(value = "offset", defaultValue = "0") int offset,
@@ -45,7 +47,7 @@ public class ProductController {
         productService.listProductInfos(UUID.fromString(storeId), offset / limit, limit));
   }
 
-  @PostMapping("/stores/{storeId}/products")
+  @PostMapping(value = "/")
   ProductInfoRes createProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestBody @Valid ProductInfoReq request) {
@@ -58,7 +60,7 @@ public class ProductController {
     return convertProductInfoResToDto(resProductInfo);
   }
 
-  @GetMapping("/stores/{storeId}/products/{productId}")
+  @GetMapping(value = "/{productId}")
   ProductInfoRes getProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
@@ -67,7 +69,7 @@ public class ProductController {
     return convertProductInfoResToDto(res);
   }
 
-  @PutMapping("/stores/{storeId}/products/{productId}")
+  @PutMapping(value = "/{productId}")
   void updateProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId,
@@ -78,14 +80,14 @@ public class ProductController {
     productService.updateProductInfo(req);
   }
 
-  @DeleteMapping("/stores/{storeId}/products/{productId}")
+  @DeleteMapping(value = "/{productId}")
   void deleteProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
     productService.deleteProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
   }
 
-  @PostMapping("/stores/{storeId}/products/{productId}/quantity/increase")
+  @PostMapping(value = "/{productId}/quantity/increase")
   ProductQuantityRes increaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId,
@@ -96,7 +98,7 @@ public class ProductController {
             UUID.fromString(storeId), UUID.fromString(productId), request.getQuantity()));
   }
 
-  @PostMapping("/stores/{storeId}/products/{productId}/quantity/decrease")
+  @PostMapping(value = "/{productId}/quantity/decrease")
   ProductQuantityRes decreaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId,

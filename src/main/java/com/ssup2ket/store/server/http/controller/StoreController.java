@@ -5,6 +5,7 @@ import com.ssup2ket.store.domain.service.StoreService;
 import com.ssup2ket.store.server.http.dto.StoreInfoListRes;
 import com.ssup2ket.store.server.http.dto.StoreInfoReq;
 import com.ssup2ket.store.server.http.dto.StoreInfoRes;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,9 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/v1")
 @Validated
+@RestController
+@RequestMapping(path = "/v1/stores")
+@Tag(name = "Store")
 public class StoreController {
   private final String uuidRegExp =
       "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
@@ -34,27 +36,27 @@ public class StoreController {
   @Autowired private StoreService storeService;
   @Autowired private ModelMapper modelMapper;
 
-  @GetMapping("/stores")
+  @GetMapping(value = "/")
   StoreInfoListRes listStore(
       @RequestParam(value = "offset", defaultValue = "0") int offset,
       @RequestParam(value = "limit", defaultValue = "50") int limit) {
     return convertStoreInfoListResToDto(storeService.listStoreInfos(offset / limit, limit));
   }
 
-  @PostMapping("/stores")
+  @PostMapping(value = "/")
   StoreInfoRes createStore(@RequestBody @Valid StoreInfoReq request) {
     StoreInfo req = convertStoreInfoReqToModel(request);
     StoreInfo res = storeService.createStoreInfo(req);
     return convertStoreInfoResToDto(res);
   }
 
-  @GetMapping("/stores/{storeId}")
+  @GetMapping(value = "/{storeId}")
   StoreInfoRes getStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
     StoreInfo resStoreInfo = storeService.getStoreInfo(UUID.fromString(storeId));
     return convertStoreInfoResToDto(resStoreInfo);
   }
 
-  @PutMapping("/stores/{storeId}")
+  @PutMapping(value = "/{storeId}")
   void updateStore(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestBody @Valid StoreInfoReq request) {
@@ -63,7 +65,7 @@ public class StoreController {
     storeService.updateStoreInfo(reqProductInfo);
   }
 
-  @DeleteMapping("/stores/{storeId}")
+  @DeleteMapping(value = "/{storeId}")
   void deleteStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
     storeService.deleteStoreInfo(UUID.fromString(storeId));
   }

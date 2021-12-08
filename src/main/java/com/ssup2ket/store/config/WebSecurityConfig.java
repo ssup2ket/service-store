@@ -16,20 +16,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    // Disable CSRF
     http.csrf().disable();
 
+    // Set access token filter and exception handling
     http.addFilterBefore(accessTokenFilter, BasicAuthenticationFilter.class)
         .exceptionHandling()
         .authenticationEntryPoint(accessTokenExceptionHandler);
 
+    // Set authorization by path
     http.authorizeRequests()
         .antMatchers(HttpMethod.GET, "/v1/stores/**/products/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, "/v1/stores/**/products")
-        .permitAll()
         .antMatchers(HttpMethod.GET, "/v1/stores/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, "/v1/stores")
+        .antMatchers(HttpMethod.GET, "/v1/swagger/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/v1/swagger-ui/**")
         .permitAll()
         .antMatchers(HttpMethod.GET, "/healthz")
         .permitAll()

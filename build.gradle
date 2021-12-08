@@ -42,7 +42,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 	implementation 'org.modelmapper:modelmapper:2.4.2'
 	implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
-	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.5.13'
 
 	compileOnly 'io.github.lognet:grpc-spring-boot-starter:4.5.8'
 	compileOnly 'org.projectlombok:lombok:1.18.22'
