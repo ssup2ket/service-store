@@ -30,9 +30,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.GET, "/v1/stores/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, "/v1/swagger/**")
+        .antMatchers(HttpMethod.GET, "/v1/swagger/**") // Swagger
         .permitAll()
-        .antMatchers(HttpMethod.GET, "/v1/swagger-ui/**")
+        .antMatchers(HttpMethod.GET, "/v1/swagger-ui/**") // Swagger
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/v1") // Swagger
         .permitAll()
         .antMatchers(HttpMethod.GET, "/healthz")
         .permitAll()

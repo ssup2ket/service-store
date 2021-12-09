@@ -48,10 +48,7 @@
   * https://github.com/logfellow/logstash-logback-encoder
 
 * Swagger
-  * https://lob-dev.tistory.com/entry/Open-API-Specfication-3
-  * https://kogle.tistory.com/292
-  * https://blog2.deliwind.com/20201127/java-swagger-ui-3-0-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0/
-  * https://stackoverflow.com/questions/38074936/api-annotations-description-is-deprecated
+  * https://oingdaddy.tistory.com/272
 
 * Test
   * https://www.baeldung.com/spring-data-disable-auto-config

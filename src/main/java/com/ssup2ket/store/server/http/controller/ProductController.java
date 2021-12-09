@@ -1,5 +1,6 @@
 package com.ssup2ket.store.server.http.controller;
 
+import com.ssup2ket.store.config.SwaggerConfig;
 import com.ssup2ket.store.domain.model.ProductInfo;
 import com.ssup2ket.store.domain.service.ProductService;
 import com.ssup2ket.store.server.http.dto.ProductInfoListRes;
@@ -7,6 +8,7 @@ import com.ssup2ket.store.server.http.dto.ProductInfoReq;
 import com.ssup2ket.store.server.http.dto.ProductInfoRes;
 import com.ssup2ket.store.server.http.dto.ProductQuantityReq;
 import com.ssup2ket.store.server.http.dto.ProductQuantityRes;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,6 +50,7 @@ public class ProductController {
   }
 
   @PostMapping(value = "/")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   ProductInfoRes createProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestBody @Valid ProductInfoReq request) {
@@ -70,6 +73,7 @@ public class ProductController {
   }
 
   @PutMapping(value = "/{productId}")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void updateProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId,
@@ -81,6 +85,7 @@ public class ProductController {
   }
 
   @DeleteMapping(value = "/{productId}")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void deleteProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
@@ -88,6 +93,7 @@ public class ProductController {
   }
 
   @PostMapping(value = "/{productId}/quantity/increase")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   ProductQuantityRes increaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId,
@@ -99,6 +105,7 @@ public class ProductController {
   }
 
   @PostMapping(value = "/{productId}/quantity/decrease")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   ProductQuantityRes decreaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId,

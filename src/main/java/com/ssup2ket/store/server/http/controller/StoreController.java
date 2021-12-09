@@ -1,10 +1,12 @@
 package com.ssup2ket.store.server.http.controller;
 
+import com.ssup2ket.store.config.SwaggerConfig;
 import com.ssup2ket.store.domain.model.StoreInfo;
 import com.ssup2ket.store.domain.service.StoreService;
 import com.ssup2ket.store.server.http.dto.StoreInfoListRes;
 import com.ssup2ket.store.server.http.dto.StoreInfoReq;
 import com.ssup2ket.store.server.http.dto.StoreInfoRes;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,6 +46,7 @@ public class StoreController {
   }
 
   @PostMapping(value = "/")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   StoreInfoRes createStore(@RequestBody @Valid StoreInfoReq request) {
     StoreInfo req = convertStoreInfoReqToModel(request);
     StoreInfo res = storeService.createStoreInfo(req);
@@ -57,6 +60,7 @@ public class StoreController {
   }
 
   @PutMapping(value = "/{storeId}")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void updateStore(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestBody @Valid StoreInfoReq request) {
@@ -66,6 +70,7 @@ public class StoreController {
   }
 
   @DeleteMapping(value = "/{storeId}")
+  @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void deleteStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
     storeService.deleteStoreInfo(UUID.fromString(storeId));
   }
