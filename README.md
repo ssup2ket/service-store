@@ -54,5 +54,6 @@
   * https://www.baeldung.com/spring-data-disable-auto-config
 
 * Dockerfile
+  * https://godekdls.github.io/Spring%20Boot/container-images/
   * https://baeji77.github.io/spring/dev/Spring-boot-gradle-build/
   * https://www.baeldung.com/spring-boot-docker-images
