@@ -21,3 +21,4 @@ export ZIPKIN_BASE_URL=""
 
 # ETC
 export PROFILE_ACTIVE=local
+export LOGGER_LEVEL=info
