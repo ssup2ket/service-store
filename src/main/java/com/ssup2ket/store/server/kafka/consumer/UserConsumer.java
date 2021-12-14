@@ -21,7 +21,9 @@ public class UserConsumer {
   @Autowired private ManagementService managementService;
   @Autowired private Tracer tracer;
 
-  @KafkaListener(topics = "outbox.event.User", groupId = "user")
+  @KafkaListener(
+      topics = "#{${spring.kafka.topic.prefix}}-ssup2ket-auth-outbox-User",
+      groupId = "#{${spring.kafka.groupid.prefix}}-ssup2ket-store-user")
   public void consume(
       @Header("id") String msgId, @Header("spanContext") String spanContextJson, DebezOutbox msg) {
     if (msg.getEventType() == "UserDelete") {

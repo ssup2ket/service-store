@@ -6,6 +6,7 @@
   * https://medium.com/swlh/a-complete-guide-to-setting-up-multiple-datasources-in-spring-8296d4ff0935
   * https://www.baeldung.com/spring-data-jpa-multiple-databases
   * https://gigas-blog.tistory.com/122
+  * https://stackoverflow.com/questions/28275448/multiple-data-source-and-schema-creation-in-spring-boot
 
 * Spring Data JPA 
   * https://www.baeldung.com/spring-data-jpa-query
