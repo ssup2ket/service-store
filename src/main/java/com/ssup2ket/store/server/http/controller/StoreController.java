@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping(path = "/v1/stores")
+@RequestMapping(path = "/v1")
 @Tag(name = "Store")
 public class StoreController {
   private final String uuidRegExp =
@@ -38,14 +38,14 @@ public class StoreController {
   @Autowired private StoreService storeService;
   @Autowired private ModelMapper modelMapper;
 
-  @GetMapping(value = "/")
+  @GetMapping(path = "/stores")
   StoreInfoListRes listStore(
       @RequestParam(value = "offset", defaultValue = "0") int offset,
       @RequestParam(value = "limit", defaultValue = "50") int limit) {
     return convertStoreInfoListResToDto(storeService.listStoreInfos(offset / limit, limit));
   }
 
-  @PostMapping(value = "/")
+  @PostMapping(path = "/stores")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   StoreInfoRes createStore(@RequestBody @Valid StoreInfoReq request) {
     StoreInfo req = convertStoreInfoReqToModel(request);
@@ -53,13 +53,13 @@ public class StoreController {
     return convertStoreInfoResToDto(res);
   }
 
-  @GetMapping(value = "/{storeId}")
+  @GetMapping(path = "/stores/{storeId}")
   StoreInfoRes getStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
     StoreInfo resStoreInfo = storeService.getStoreInfo(UUID.fromString(storeId));
     return convertStoreInfoResToDto(resStoreInfo);
   }
 
-  @PutMapping(value = "/{storeId}")
+  @PutMapping(path = "/stores/{storeId}")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void updateStore(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
@@ -69,7 +69,7 @@ public class StoreController {
     storeService.updateStoreInfo(reqProductInfo);
   }
 
-  @DeleteMapping(value = "/{storeId}")
+  @DeleteMapping(path = "/stores/{storeId}")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void deleteStore(@PathVariable @Pattern(regexp = uuidRegExp) String storeId) {
     storeService.deleteStoreInfo(UUID.fromString(storeId));

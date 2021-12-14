@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping(path = "/v1/stores/{storeId}/products")
+@RequestMapping(path = "/v1")
 @Tag(name = "Product")
 public class ProductController {
   private final String uuidRegExp =
@@ -40,7 +40,7 @@ public class ProductController {
   @Autowired private ProductService productService;
   @Autowired private ModelMapper modelMapper;
 
-  @GetMapping(value = "/")
+  @GetMapping(path = "/stores/{storeId}/products")
   ProductInfoListRes listProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @RequestParam(value = "offset", defaultValue = "0") int offset,
@@ -49,7 +49,7 @@ public class ProductController {
         productService.listProductInfos(UUID.fromString(storeId), offset / limit, limit));
   }
 
-  @PostMapping(value = "/")
+  @PostMapping(path = "/stores/{storeId}/products")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   ProductInfoRes createProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
@@ -63,7 +63,7 @@ public class ProductController {
     return convertProductInfoResToDto(resProductInfo);
   }
 
-  @GetMapping(value = "/{productId}")
+  @GetMapping(path = "/stores/{storeId}/products/{productId}")
   ProductInfoRes getProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
       @PathVariable @Pattern(regexp = uuidRegExp) String productId) {
@@ -72,7 +72,7 @@ public class ProductController {
     return convertProductInfoResToDto(res);
   }
 
-  @PutMapping(value = "/{productId}")
+  @PutMapping(path = "/stores/{storeId}/products/{productId}")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void updateProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
@@ -84,7 +84,7 @@ public class ProductController {
     productService.updateProductInfo(req);
   }
 
-  @DeleteMapping(value = "/{productId}")
+  @DeleteMapping(path = "/stores/{storeId}/products/{productId}")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   void deleteProduct(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
@@ -92,7 +92,7 @@ public class ProductController {
     productService.deleteProductInfo(UUID.fromString(storeId), UUID.fromString(productId));
   }
 
-  @PostMapping(value = "/{productId}/quantity/increase")
+  @PostMapping(path = "/stores/{storeId}/products/{productId}/quantity/increase")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   ProductQuantityRes increaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
@@ -104,7 +104,7 @@ public class ProductController {
             UUID.fromString(storeId), UUID.fromString(productId), request.getQuantity()));
   }
 
-  @PostMapping(value = "/{productId}/quantity/decrease")
+  @PostMapping(path = "/stores/{storeId}/products/{productId}/quantity/decrease")
   @SecurityRequirement(name = SwaggerConfig.SECURITY_SCHEME_ACCESS_TOKEN)
   ProductQuantityRes decreaseProductQuantity(
       @PathVariable @Pattern(regexp = uuidRegExp) String storeId,
