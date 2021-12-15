@@ -22,6 +22,7 @@
   * https://www.quora.com/What-is-the-difference-between-acknowledgement-and-commit-in-Kafka
   * https://stackoverflow.com/questions/40872520/whats-the-purpose-of-kafkas-key-value-pair-based-messaging
   * https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html
+  * https://stackoverflow.com/questions/47427948/how-to-acknowledge-current-offset-in-spring-kafka-for-manual-commit
 
 * Application Properties
   * https://lejewk.github.io/springboot-gradle-spring-profiles-active/

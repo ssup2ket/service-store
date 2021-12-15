@@ -3,7 +3,6 @@ package com.ssup2ket.store.server.kafka.consumer;
 import brave.Tracer;
 import brave.propagation.TraceContextOrSamplingFlags;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssup2ket.store.domain.model.Inbox;
 import com.ssup2ket.store.domain.service.ManagementService;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
@@ -34,30 +33,27 @@ public class UserConsumer {
       Acknowledgment ack) {
 
     try {
-      // Get outbox object
-      ObjectMapper objectMapper = new ObjectMapper();
-      DebezOutbox outbox = objectMapper.readValue(msg, DebezOutbox.class);
+      // Get msg info
+      UUID msgUuid = ConsumerHelper.getMsgUuidFromStringId(msgId);
+      DebezOutbox outbox = ConsumerHelper.getDebezOutboxFromMsg(msgId, msg);
 
-      if (outbox.getEventType() == "UserDelete") {
-        // Convert debezium outbox message to inbox
-        Inbox inbox =
-            new Inbox(
-                UUID.fromString(msgId),
-                AGGREGATE_TYPE,
-                EVENT_TYPE_DELETE,
-                outbox.getPayload(),
-                spanContextJson);
-
+      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_DELETE)) {
         // Set span context
         TraceContextOrSamplingFlags spanContext =
             SpanContext.GetSpanContextFromJson(spanContextJson);
         tracer.nextSpan(spanContext);
 
-        // Call service
+        // Call delete service
+        Inbox inbox =
+            new Inbox(
+                msgUuid,
+                AGGREGATE_TYPE,
+                EVENT_TYPE_DELETE,
+                outbox.getPayload().getEvent(),
+                spanContextJson);
         managementService.deleteStoreProudctByRemovedUser(inbox);
       }
     } catch (JsonProcessingException e) {
-      ack.acknowledge(); // Ignore wrong format message
       throw new RuntimeException(e);
     }
 
