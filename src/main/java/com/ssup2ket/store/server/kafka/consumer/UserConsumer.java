@@ -55,12 +55,13 @@ public class UserConsumer {
 
         // Call service
         managementService.deleteStoreProudctByRemovedUser(inbox);
-
-        // ACK
-
       }
     } catch (JsonProcessingException e) {
+      ack.acknowledge(); // Ignore wrong format message
       throw new RuntimeException(e);
     }
+
+    // ACK
+    ack.acknowledge();
   }
 }
