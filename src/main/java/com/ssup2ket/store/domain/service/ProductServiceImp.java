@@ -1,15 +1,19 @@
 package com.ssup2ket.store.domain.service;
 
 import brave.Tracer;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssup2ket.store.domain.model.Inbox;
 import com.ssup2ket.store.domain.model.Outbox;
 import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.repository.InboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoSecondaryRepo;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +27,7 @@ public class ProductServiceImp implements ProductService {
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
   @Autowired private ProductInfoSecondaryRepo productInfoSecondaryRepo;
   @Autowired private OutboxPrimaryRepo outboxPrimaryRepo;
+  @Autowired private InboxPrimaryRepo inboxPrimaryRepo;
   @Autowired private Tracer tracer;
 
   @Override
@@ -119,7 +124,55 @@ public class ProductServiceImp implements ProductService {
 
   @Override
   @Transactional
+  public int increaseProductQuantityInbox(Inbox inbox) {
+    // Get order info from inbox
+    Map<String, Object> inboxMap;
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      inboxMap =
+          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
+    int increment = (int) inboxMap.get("count");
+
+    // Save inbox to prevent duplicate action
+    inboxPrimaryRepo.save(inbox);
+
+    // Increment
+    productInfoPrimaryRepo.incraseQuantity(productId, increment);
+    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
+    return productInfo.getQuantity();
+  }
+
+  @Override
+  @Transactional
   public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement) {
+    productInfoPrimaryRepo.decraseQuantity(productId, decrement);
+    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
+    return productInfo.getQuantity();
+  }
+
+  @Override
+  @Transactional
+  public int decreaseProductQuantityInbox(Inbox inbox) {
+    // Get order info from inbox
+    Map<String, Object> inboxMap;
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      inboxMap =
+          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
+    int decrement = (int) inboxMap.get("count");
+
+    // Save inbox to prevent duplicate action
+    inboxPrimaryRepo.save(inbox);
+
+    // Decrement
     productInfoPrimaryRepo.decraseQuantity(productId, decrement);
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
     return productInfo.getQuantity();

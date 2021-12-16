@@ -4,7 +4,7 @@ import brave.Tracer;
 import brave.propagation.TraceContextOrSamplingFlags;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssup2ket.store.domain.model.Inbox;
-import com.ssup2ket.store.domain.service.ManagementService;
+import com.ssup2ket.store.domain.service.ProductService;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.kafka.message.DebezOutbox;
 import java.util.UUID;
@@ -18,16 +18,17 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class UserConsumer {
-  private static final String AGGREGATE_TYPE = "User";
-  private static final String EVENT_TYPE_DELETE = "UserDelete";
+public class OrderConsumer {
+  private static final String AGGREGATE_TYPE = "Order";
+  private static final String EVENT_TYPE_ORDER_SHIPPING = "OrderShipping";
+  private static final String EVENT_TYPE_ORDER_CANCELLED = "OrderCancelled";
 
-  @Autowired private ManagementService managementService;
+  @Autowired private ProductService productService;
   @Autowired private Tracer tracer;
 
   @KafkaListener(
-      topics = "#{${spring.kafka.topic.prefix}}-ssup2ket-auth-outbox-User",
-      groupId = "#{${spring.kafka.groupid.prefix}}-ssup2ket-store-user")
+      topics = "#{${spring.kafka.topic.prefix}}-ssup2ket-order-outbox-Order",
+      groupId = "#{${spring.kafka.groupid.prefix}}-ssup2ket-store-order")
   public void consume(
       @Header("id") String msgId,
       @Header("spanContext") String spanContextJson,
@@ -39,26 +40,42 @@ public class UserConsumer {
       UUID msgUuid = ConsumerHelper.getMsgUuidFromStringId(msgId);
       DebezOutbox outbox = ConsumerHelper.getDebezOutboxFromMsg(msgId, msg);
       log.info(
-          "User Consumer id:{} eventType:{} event:{}",
+          "Order Consumer id:{} eventType:{} event:{}",
           outbox.getId().toString(),
           outbox.getPayload().getEventType(),
           outbox.getPayload().getEvent());
 
-      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_DELETE)) {
+      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_ORDER_SHIPPING)) {
         // Set span context
         TraceContextOrSamplingFlags spanContext =
             SpanContext.GetSpanContextFromJson(spanContextJson);
         tracer.nextSpan(spanContext);
 
-        // Call delete service
+        // Call decrese product quantity service
         Inbox inbox =
             new Inbox(
                 msgUuid,
                 AGGREGATE_TYPE,
-                EVENT_TYPE_DELETE,
+                EVENT_TYPE_ORDER_SHIPPING,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
-        managementService.deleteStoreProudctByRemovedUser(inbox);
+        productService.decreaseProductQuantityInbox(inbox);
+
+      } else if (outbox.getPayload().getEventType().equals(EVENT_TYPE_ORDER_CANCELLED)) {
+        // Set span context
+        TraceContextOrSamplingFlags spanContext =
+            SpanContext.GetSpanContextFromJson(spanContextJson);
+        tracer.nextSpan(spanContext);
+
+        // Call increase product quantity service
+        Inbox inbox =
+            new Inbox(
+                msgUuid,
+                AGGREGATE_TYPE,
+                EVENT_TYPE_ORDER_SHIPPING,
+                outbox.getPayload().getEvent(),
+                spanContextJson);
+        productService.increaseProductQuantityInbox(inbox);
       }
     } catch (JsonProcessingException e) {
       ack.acknowledge();

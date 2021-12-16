@@ -1,5 +1,6 @@
 package com.ssup2ket.store.domain.service;
 
+import com.ssup2ket.store.domain.model.Inbox;
 import com.ssup2ket.store.domain.model.ProductInfo;
 import java.util.List;
 import java.util.UUID;
@@ -19,5 +20,9 @@ public interface ProductService {
 
   public int increaseProductQuantity(UUID storeId, UUID productId, int increment);
 
+  public int increaseProductQuantityInbox(Inbox inbox);
+
   public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement);
+
+  public int decreaseProductQuantityInbox(Inbox inbox);
 }

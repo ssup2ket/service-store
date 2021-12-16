@@ -33,7 +33,7 @@ public class ManagementServiceImp implements ManagementService {
 
     // Save inbox to prevent duplicate action
     // Saving inbox isn't necessary action bacause delete action could be repeatedly performed
-    inboxPrimaryRepo.save(inbox);
+    // inboxPrimaryRepo.save(inbox);
 
     // Delete all products ownedd by deleted user
     List<StoreInfo> storeList = storeInfoPrimaryRepo.findByUserId(userInfo.getId());
