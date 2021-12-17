@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssup2ket.store.domain.model.Inbox;
 import com.ssup2ket.store.domain.model.StoreInfo;
 import com.ssup2ket.store.domain.model.UserInfo;
-import com.ssup2ket.store.domain.repository.InboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import java.util.List;
@@ -17,11 +16,10 @@ public class ManagementServiceImp implements ManagementService {
 
   @Autowired private StoreInfoPrimaryRepo storeInfoPrimaryRepo;
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
-  @Autowired private InboxPrimaryRepo inboxPrimaryRepo;
 
   @Override
   @Transactional
-  public void deleteStoreProudctByRemovedUser(Inbox inbox) {
+  public void deleteStoreProudctByRemovedUserInbox(Inbox inbox) {
     // Get userinfo from inbox
     UserInfo userInfo;
     try {

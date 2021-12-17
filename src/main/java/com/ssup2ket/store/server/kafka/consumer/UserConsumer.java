@@ -58,7 +58,7 @@ public class UserConsumer {
                 EVENT_TYPE_DELETE,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
-        managementService.deleteStoreProudctByRemovedUser(inbox);
+        managementService.deleteStoreProudctByRemovedUserInbox(inbox);
       }
     } catch (JsonProcessingException e) {
       ack.acknowledge();
