@@ -20,9 +20,9 @@ public interface ProductService {
 
   public int increaseProductQuantity(UUID storeId, UUID productId, int increment);
 
-  public int increaseProductQuantityInbox(Inbox inbox);
+  public void increaseProductQuantityMq(Inbox inbox);
 
   public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement);
 
-  public int decreaseProductQuantityInbox(Inbox inbox);
+  public void decreaseProductQuantityMq(Inbox inbox);
 }

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderConsumer {
   private static final String AGGREGATE_TYPE = "Order";
-  private static final String EVENT_TYPE_ORDER_SHIPPING = "OrderShipping";
+  private static final String EVENT_TYPE_ORDER_PAID = "OrderPaid";
   private static final String EVENT_TYPE_ORDER_CANCELLED = "OrderCancelled";
 
   @Autowired private ProductService productService;
@@ -45,7 +45,7 @@ public class OrderConsumer {
           outbox.getPayload().getEventType(),
           outbox.getPayload().getEvent());
 
-      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_ORDER_SHIPPING)) {
+      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_ORDER_PAID)) {
         // Set span context
         TraceContextOrSamplingFlags spanContext =
             SpanContext.GetSpanContextFromJson(spanContextJson);
@@ -56,10 +56,10 @@ public class OrderConsumer {
             new Inbox(
                 msgUuid,
                 AGGREGATE_TYPE,
-                EVENT_TYPE_ORDER_SHIPPING,
+                EVENT_TYPE_ORDER_PAID,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
-        productService.decreaseProductQuantityInbox(inbox);
+        productService.decreaseProductQuantityMq(inbox);
 
       } else if (outbox.getPayload().getEventType().equals(EVENT_TYPE_ORDER_CANCELLED)) {
         // Set span context
@@ -72,10 +72,10 @@ public class OrderConsumer {
             new Inbox(
                 msgUuid,
                 AGGREGATE_TYPE,
-                EVENT_TYPE_ORDER_SHIPPING,
+                EVENT_TYPE_ORDER_PAID,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
-        productService.increaseProductQuantityInbox(inbox);
+        productService.increaseProductQuantityMq(inbox);
       }
     } catch (JsonProcessingException e) {
       ack.acknowledge();

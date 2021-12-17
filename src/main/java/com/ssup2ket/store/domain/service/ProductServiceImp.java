@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,8 +124,18 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  public void increaseProductQuantityMq(Inbox inbox) {
+    try {
+      increaseProductQuantityMqTx(inbox);
+    } catch (DuplicateKeyException e) {
+      // Ignore dup exception
+    } catch (Exception e) {
+      increaseProductQuantityMqError(inbox);
+    }
+  }
+
   @Transactional
-  public int increaseProductQuantityInbox(Inbox inbox) {
+  public void increaseProductQuantityMqTx(Inbox inbox) {
     // Get order info from inbox
     Map<String, Object> inboxMap;
     try {
@@ -142,8 +153,56 @@ public class ProductServiceImp implements ProductService {
 
     // Increment
     productInfoPrimaryRepo.incraseQuantity(productId, increment);
-    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
-    return productInfo.getQuantity();
+
+    try {
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for product cancellation event
+      Outbox outbox =
+          new Outbox(
+              null,
+              aggregateProuductType,
+              productId.toString(),
+              "ProductCancel",
+              "",
+              spanContextJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Transactional
+  public void increaseProductQuantityMqError(Inbox inbox) {
+    // Get order info from inbox
+    Map<String, Object> inboxMap;
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      inboxMap =
+          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
+
+    try {
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for product cancellation event
+      Outbox outbox =
+          new Outbox(
+              null,
+              aggregateProuductType,
+              productId.toString(),
+              "ProductCancelError",
+              "",
+              spanContextJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -151,12 +210,25 @@ public class ProductServiceImp implements ProductService {
   public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement) {
     productInfoPrimaryRepo.decraseQuantity(productId, decrement);
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
+    if (productInfo.getQuantity() < 0) {
+      throw new RuntimeException("insuffcient product quantity");
+    }
     return productInfo.getQuantity();
   }
 
   @Override
+  public void decreaseProductQuantityMq(Inbox inbox) {
+    try {
+      decreaseProductQuantityMqTx(inbox);
+    } catch (DuplicateKeyException e) {
+      // Ignore dup exception
+    } catch (Exception e) {
+      decreaseProductQuantityMqError(inbox);
+    }
+  }
+
   @Transactional
-  public int decreaseProductQuantityInbox(Inbox inbox) {
+  public void decreaseProductQuantityMqTx(Inbox inbox) {
     // Get order info from inbox
     Map<String, Object> inboxMap;
     try {
@@ -175,6 +247,58 @@ public class ProductServiceImp implements ProductService {
     // Decrement
     productInfoPrimaryRepo.decraseQuantity(productId, decrement);
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
-    return productInfo.getQuantity();
+    if (productInfo.getQuantity() < 0) {
+      throw new RuntimeException("insufficient product quantity");
+    }
+
+    try {
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for product reservation event
+      Outbox outbox =
+          new Outbox(
+              null,
+              aggregateProuductType,
+              productInfo.getId().toString(),
+              "ProductReserve",
+              productInfo.toJsonString(),
+              spanContextJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Transactional
+  public void decreaseProductQuantityMqError(Inbox inbox) {
+    // Get order info from inbox
+    Map<String, Object> inboxMap;
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      inboxMap =
+          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
+
+    try {
+      // Get span context as JSON
+      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Create outbox for product cancellation event
+      Outbox outbox =
+          new Outbox(
+              null,
+              aggregateProuductType,
+              productId.toString(),
+              "ProductReserveError",
+              "",
+              spanContextJson);
+      outboxPrimaryRepo.save(outbox);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

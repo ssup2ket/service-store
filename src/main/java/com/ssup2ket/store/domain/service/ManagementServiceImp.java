@@ -19,7 +19,7 @@ public class ManagementServiceImp implements ManagementService {
 
   @Override
   @Transactional
-  public void deleteStoreProudctByRemovedUserInbox(Inbox inbox) {
+  public void deleteStoreProudctByRemovedUserMq(Inbox inbox) {
     // Get userinfo from inbox
     UserInfo userInfo;
     try {
