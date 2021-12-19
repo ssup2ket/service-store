@@ -1,29 +1,36 @@
 package com.ssup2ket.store.domain.service;
 
 import brave.Tracer;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssup2ket.store.domain.model.Inbox;
-import com.ssup2ket.store.domain.model.Outbox;
-import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.entity.Inbox;
+import com.ssup2ket.store.domain.entity.Outbox;
+import com.ssup2ket.store.domain.entity.ProductInfo;
 import com.ssup2ket.store.domain.repository.InboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoSecondaryRepo;
+import com.ssup2ket.store.domain.vo.ProductOrder;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class ProductServiceImp implements ProductService {
-  private static final String aggregateProuductType = "Product";
+  private static final String AGGREGATE_TYPE_PRODUCT = "Product";
+  private static final String EVENT_TYPE_PRODUCT_CREATED = "ProductCreated";
+  private static final String EVENT_TYPE_PRODUCT_DELETED = "ProductDeleted";
+  private static final String EVENT_TYPE_PRODUCT_INCREASED = "ProductIncreased";
+  private static final String EVENT_TYPE_PRODUCT_INCREASED_ERROR = "ProductIncreasedError";
+  private static final String EVENT_TYPE_PRODUCT_DECREASED = "ProductDecreased";
+  private static final String EVENT_TYPE_PRODUCT_DECREASED_ERROR = "ProductDecreasedError";
 
   @Autowired private ProductInfoPrimaryRepo productInfoPrimaryRepo;
   @Autowired private ProductInfoSecondaryRepo productInfoSecondaryRepo;
@@ -61,9 +68,9 @@ public class ProductServiceImp implements ProductService {
       Outbox outbox =
           new Outbox(
               null,
-              aggregateProuductType,
+              AGGREGATE_TYPE_PRODUCT,
               productInfo.getId().toString(),
-              "ProductCreate",
+              EVENT_TYPE_PRODUCT_CREATED,
               productInfoJson,
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
@@ -104,9 +111,9 @@ public class ProductServiceImp implements ProductService {
       Outbox outbox =
           new Outbox(
               null,
-              aggregateProuductType,
+              AGGREGATE_TYPE_PRODUCT,
               productInfo.getId().toString(),
-              "ProductDelete",
+              EVENT_TYPE_PRODUCT_DELETED,
               productInfo.toJsonString(),
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
@@ -129,7 +136,9 @@ public class ProductServiceImp implements ProductService {
       increaseProductQuantityMqTx(inbox);
     } catch (DuplicateKeyException e) {
       // Ignore dup exception
+      log.info("Occur DB duplicate key exception. Ignore it");
     } catch (Exception e) {
+      log.error("Increase product error", e);
       increaseProductQuantityMqError(inbox);
     }
   }
@@ -137,34 +146,28 @@ public class ProductServiceImp implements ProductService {
   @Transactional
   public void increaseProductQuantityMqTx(Inbox inbox) {
     // Get order info from inbox
-    Map<String, Object> inboxMap;
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      inboxMap =
-          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
-    int increment = (int) inboxMap.get("count");
+    ProductOrder productOrder = new ProductOrder(inbox.getPayload());
 
     // Save inbox to prevent duplicate action
+    if (inboxPrimaryRepo.findById(productOrder.getId()).isPresent()) {
+      throw new DuplicateKeyException("duplicated inbox");
+    }
     inboxPrimaryRepo.save(inbox);
 
     // Increment
-    productInfoPrimaryRepo.incraseQuantity(productId, increment);
+    productInfoPrimaryRepo.incraseQuantity(productOrder.getId(), productOrder.getCount());
 
     try {
       // Get span context as JSON
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
 
-      // Create outbox for product cancellation event
+      // Create outbox to publish product increment event
       Outbox outbox =
           new Outbox(
               null,
-              aggregateProuductType,
-              productId.toString(),
-              "ProductCancel",
+              AGGREGATE_TYPE_PRODUCT,
+              productOrder.getId().toString(),
+              EVENT_TYPE_PRODUCT_INCREASED,
               "",
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
@@ -176,27 +179,19 @@ public class ProductServiceImp implements ProductService {
   @Transactional
   public void increaseProductQuantityMqError(Inbox inbox) {
     // Get order info from inbox
-    Map<String, Object> inboxMap;
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      inboxMap =
-          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
+    ProductOrder productOrder = new ProductOrder(inbox.getPayload());
 
     try {
       // Get span context as JSON
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
 
-      // Create outbox for product cancellation event
+      // Create outbox to public product increment error event
       Outbox outbox =
           new Outbox(
               null,
-              aggregateProuductType,
-              productId.toString(),
-              "ProductCancelError",
+              AGGREGATE_TYPE_PRODUCT,
+              productOrder.getId().toString(),
+              EVENT_TYPE_PRODUCT_INCREASED_ERROR,
               "",
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
@@ -222,7 +217,9 @@ public class ProductServiceImp implements ProductService {
       decreaseProductQuantityMqTx(inbox);
     } catch (DuplicateKeyException e) {
       // Ignore dup exception
+      log.info("Occur DB duplicate key exception. Ignore it");
     } catch (Exception e) {
+      log.error("Decrese product error", e);
       decreaseProductQuantityMqError(inbox);
     }
   }
@@ -230,23 +227,17 @@ public class ProductServiceImp implements ProductService {
   @Transactional
   public void decreaseProductQuantityMqTx(Inbox inbox) {
     // Get order info from inbox
-    Map<String, Object> inboxMap;
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      inboxMap =
-          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
-    int decrement = (int) inboxMap.get("count");
+    ProductOrder productOrder = new ProductOrder(inbox.getPayload());
 
-    // Save inbox to prevent duplicate action
+    // Check and Save inbox to prevent duplicate action
+    if (inboxPrimaryRepo.findById(inbox.getId()).isPresent()) {
+      throw new DuplicateKeyException("duplicated inbox");
+    }
     inboxPrimaryRepo.save(inbox);
 
     // Decrement
-    productInfoPrimaryRepo.decraseQuantity(productId, decrement);
-    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
+    productInfoPrimaryRepo.decraseQuantity(productOrder.getId(), productOrder.getCount());
+    ProductInfo productInfo = productInfoPrimaryRepo.getById(productOrder.getId());
     if (productInfo.getQuantity() < 0) {
       throw new RuntimeException("insufficient product quantity");
     }
@@ -255,13 +246,13 @@ public class ProductServiceImp implements ProductService {
       // Get span context as JSON
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
 
-      // Create outbox for product reservation event
+      // Create outbox to publish product decrement event
       Outbox outbox =
           new Outbox(
               null,
-              aggregateProuductType,
+              AGGREGATE_TYPE_PRODUCT,
               productInfo.getId().toString(),
-              "ProductReserve",
+              EVENT_TYPE_PRODUCT_DECREASED,
               productInfo.toJsonString(),
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
@@ -273,27 +264,19 @@ public class ProductServiceImp implements ProductService {
   @Transactional
   public void decreaseProductQuantityMqError(Inbox inbox) {
     // Get order info from inbox
-    Map<String, Object> inboxMap;
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      inboxMap =
-          objectMapper.readValue(inbox.getPayload(), new TypeReference<Map<String, Object>>() {});
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    UUID productId = UUID.fromString((String) inboxMap.get("productId"));
+    ProductOrder productOrder = new ProductOrder(inbox.getPayload());
 
     try {
       // Get span context as JSON
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
 
-      // Create outbox for product cancellation event
+      // Create outbox to publish product decrement error event
       Outbox outbox =
           new Outbox(
               null,
-              aggregateProuductType,
-              productId.toString(),
-              "ProductReserveError",
+              AGGREGATE_TYPE_PRODUCT,
+              productOrder.getId().toString(),
+              EVENT_TYPE_PRODUCT_DECREASED_ERROR,
               "",
               spanContextJson);
       outboxPrimaryRepo.save(outbox);

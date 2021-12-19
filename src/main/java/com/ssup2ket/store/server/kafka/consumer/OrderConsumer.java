@@ -2,10 +2,11 @@ package com.ssup2ket.store.server.kafka.consumer;
 
 import brave.Tracer;
 import brave.propagation.TraceContextOrSamplingFlags;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssup2ket.store.domain.model.Inbox;
+import com.ssup2ket.store.domain.entity.Inbox;
 import com.ssup2ket.store.domain.service.ProductService;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
+import com.ssup2ket.store.server.error.ProductNotFoundException;
+import com.ssup2ket.store.server.error.StoreNotFoundException;
 import com.ssup2ket.store.server.kafka.message.DebezOutbox;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class OrderConsumer {
-  private static final String AGGREGATE_TYPE = "Order";
+  private static final String AGGREGATE_TYPE_ORDER = "Order";
   private static final String EVENT_TYPE_ORDER_PAID = "OrderPaid";
   private static final String EVENT_TYPE_ORDER_CANCELLED = "OrderCancelled";
 
@@ -55,7 +56,7 @@ public class OrderConsumer {
         Inbox inbox =
             new Inbox(
                 msgUuid,
-                AGGREGATE_TYPE,
+                AGGREGATE_TYPE_ORDER,
                 EVENT_TYPE_ORDER_PAID,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
@@ -71,14 +72,18 @@ public class OrderConsumer {
         Inbox inbox =
             new Inbox(
                 msgUuid,
-                AGGREGATE_TYPE,
+                AGGREGATE_TYPE_ORDER,
                 EVENT_TYPE_ORDER_PAID,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
         productService.increaseProductQuantityMq(inbox);
       }
-    } catch (JsonProcessingException e) {
+    } catch (StoreNotFoundException | ProductNotFoundException e) {
+      log.error("Resource not found. Ignore it", e);
       ack.acknowledge();
+      return;
+    } catch (Exception e) {
+      log.error("Order consumer exception", e);
       throw new RuntimeException(e);
     }
     ack.acknowledge();

@@ -10,6 +10,7 @@
 
 * Spring Data JPA 
   * https://www.baeldung.com/spring-data-jpa-query
+  * https://stackoverflow.com/questions/40605834/spring-jparepositroy-save-does-not-appear-to-throw-exception-on-duplicate-save
 
 * GRPC
   * https://github.com/LogNet/grpc-spring-boot-starter

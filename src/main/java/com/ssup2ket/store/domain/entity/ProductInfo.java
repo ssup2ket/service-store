@@ -1,10 +1,11 @@
-package com.ssup2ket.store.domain.model;
+package com.ssup2ket.store.domain.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssup2ket.store.pkg.model.BaseCreatedUpdatedModel;
+import com.ssup2ket.store.pkg.entity.BaseCreatedUpdatedEntity;
 import java.util.UUID;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -13,12 +14,15 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "stores")
-public class StoreInfo extends BaseCreatedUpdatedModel {
+@Table(name = "products")
+public class ProductInfo extends BaseCreatedUpdatedEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")
   private UUID id;
+
+  @Column(columnDefinition = "BINARY(16)")
+  private UUID storeId;
 
   @Length(max = 30)
   private String name;
@@ -26,8 +30,8 @@ public class StoreInfo extends BaseCreatedUpdatedModel {
   @Length(max = 50)
   private String description;
 
-  @Column(columnDefinition = "BINARY(16)")
-  private UUID userId;
+  @Min(0)
+  private int quantity;
 
   public String toJsonString() throws JsonProcessingException {
     ObjectMapper jsonMapper = new ObjectMapper();

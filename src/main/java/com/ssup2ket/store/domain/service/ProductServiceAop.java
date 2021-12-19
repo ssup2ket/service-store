@@ -1,9 +1,11 @@
 package com.ssup2ket.store.domain.service;
 
-import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.entity.Inbox;
+import com.ssup2ket.store.domain.entity.ProductInfo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoSecondaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
+import com.ssup2ket.store.domain.vo.ProductOrder;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.UUID;
@@ -31,6 +33,10 @@ public class ProductServiceAop {
       storeId = (UUID) joinPoint.getArgs()[0];
     } else if (joinPoint.getArgs()[0] instanceof ProductInfo) {
       storeId = ((ProductInfo) joinPoint.getArgs()[0]).getStoreId();
+    } else if (joinPoint.getArgs()[0] instanceof Inbox) {
+      Inbox inbox = ((Inbox) joinPoint.getArgs()[0]);
+      ProductOrder productOrder = new ProductOrder(inbox.getPayload());
+      storeId = productOrder.getStoreId();
     } else {
       throw new IllegalArgumentException("Wrong store ID");
     }
@@ -44,7 +50,7 @@ public class ProductServiceAop {
           + " com.ssup2ket.store.domain.service.ProductServiceImp.updateProductInfo(..)) ||"
           + " execution(*"
           + " com.ssup2ket.store.domain.service.ProductServiceImp.deleteProductInfo(..))")
-  private void validateProudctFromPrimaryDB(JoinPoint joinPoint) {
+  private void validateProductFromPrimaryDB(JoinPoint joinPoint) {
     // Get product UUID
     UUID productId;
     if (joinPoint.getArgs()[1] instanceof UUID) {
@@ -62,7 +68,7 @@ public class ProductServiceAop {
   }
 
   @Before("execution(* com.ssup2ket.store.domain.service.ProductServiceImp.*Quantity(..))")
-  private void validateProudctFromSecondaryDB(JoinPoint joinPoint) {
+  private void validateProductFromSecondaryDB(JoinPoint joinPoint) {
     // Get product UUID
     UUID productId;
     if (joinPoint.getArgs()[1] instanceof UUID) {

@@ -38,7 +38,7 @@ public class DataSourceSecondaryConfig {
       EntityManagerFactoryBuilder builder) {
     return builder
         .dataSource(secondaryDataSource())
-        .packages("com.ssup2ket.store.domain.model")
+        .packages("com.ssup2ket.store.domain.entity")
         .persistenceUnit("secondary")
         .build();
   }

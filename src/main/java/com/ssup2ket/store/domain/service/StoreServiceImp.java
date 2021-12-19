@@ -2,8 +2,8 @@ package com.ssup2ket.store.domain.service;
 
 import brave.Tracer;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssup2ket.store.domain.model.Outbox;
-import com.ssup2ket.store.domain.model.StoreInfo;
+import com.ssup2ket.store.domain.entity.Outbox;
+import com.ssup2ket.store.domain.entity.StoreInfo;
 import com.ssup2ket.store.domain.repository.OutboxPrimaryRepo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreServiceImp implements StoreService {
-  private static final String aggregateStoreType = "Store";
+  private static final String AGGREGATE_TYPE_STORE = "Store";
+  private static final String EVENT_TYPE_STORE_CREATED = "StoreCreated";
+  private static final String EVENT_TYPE_STORE_DELETED = "StoreDeleted";
 
   @Autowired private StoreInfoPrimaryRepo storeInfoPrimaryRepo;
   @Autowired private StoreInfoSecondaryRepo storeInfoSecondaryRepo;
@@ -62,9 +64,9 @@ public class StoreServiceImp implements StoreService {
       Outbox outbox =
           new Outbox(
               null,
-              aggregateStoreType,
+              AGGREGATE_TYPE_STORE,
               storeInfo.getId().toString(),
-              "StoreCreate",
+              EVENT_TYPE_STORE_CREATED,
               storeInfo.toJsonString(),
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
@@ -108,9 +110,9 @@ public class StoreServiceImp implements StoreService {
       Outbox outbox =
           new Outbox(
               null,
-              aggregateStoreType,
+              AGGREGATE_TYPE_STORE,
               storeInfo.getId().toString(),
-              "StoreDelete",
+              EVENT_TYPE_STORE_DELETED,
               storeInfo.toJsonString(),
               spanContextJson);
       outboxPrimaryRepo.save(outbox);

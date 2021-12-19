@@ -1,6 +1,6 @@
-package com.ssup2ket.store.domain.model;
+package com.ssup2ket.store.domain.entity;
 
-import com.ssup2ket.store.pkg.model.BaseCreatedModel;
+import com.ssup2ket.store.pkg.entity.BaseCreatedEntity;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.*;
@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "outboxes")
-public class Outbox extends BaseCreatedModel {
+public class Outbox extends BaseCreatedEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")

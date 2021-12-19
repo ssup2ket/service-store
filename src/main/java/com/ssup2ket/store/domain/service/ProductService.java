@@ -1,7 +1,7 @@
 package com.ssup2ket.store.domain.service;
 
-import com.ssup2ket.store.domain.model.Inbox;
-import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.entity.Inbox;
+import com.ssup2ket.store.domain.entity.ProductInfo;
 import java.util.List;
 import java.util.UUID;
 

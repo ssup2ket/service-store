@@ -1,11 +1,10 @@
 package com.ssup2ket.store.domain.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssup2ket.store.domain.model.Inbox;
-import com.ssup2ket.store.domain.model.StoreInfo;
-import com.ssup2ket.store.domain.model.UserInfo;
+import com.ssup2ket.store.domain.entity.Inbox;
+import com.ssup2ket.store.domain.entity.StoreInfo;
 import com.ssup2ket.store.domain.repository.ProductInfoPrimaryRepo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
+import com.ssup2ket.store.domain.vo.UserInfo;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,15 +18,9 @@ public class ManagementServiceImp implements ManagementService {
 
   @Override
   @Transactional
-  public void deleteStoreProudctByRemovedUserMq(Inbox inbox) {
-    // Get userinfo from inbox
-    UserInfo userInfo;
-    try {
-      ObjectMapper objectMapper = new ObjectMapper();
-      userInfo = objectMapper.readValue(inbox.getPayload(), UserInfo.class);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  public void deleteStoreProudctByDeletedUserMq(Inbox inbox) {
+    // Get userinfo from inbox payload
+    UserInfo userInfo = new UserInfo(inbox.getPayload());
 
     // Save inbox to prevent duplicate action
     // Saving inbox isn't necessary action bacause delete action could be repeatedly performed

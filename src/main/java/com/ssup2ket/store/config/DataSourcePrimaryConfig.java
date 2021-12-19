@@ -39,7 +39,7 @@ public class DataSourcePrimaryConfig {
       EntityManagerFactoryBuilder builder) {
     return builder
         .dataSource(primaryDataSource())
-        .packages("com.ssup2ket.store.domain.model")
+        .packages("com.ssup2ket.store.domain.entity")
         .persistenceUnit("primary")
         .build();
   }

@@ -1,6 +1,6 @@
-package com.ssup2ket.store.domain.model;
+package com.ssup2ket.store.domain.entity;
 
-import com.ssup2ket.store.pkg.model.BaseCreatedModel;
+import com.ssup2ket.store.pkg.entity.BaseCreatedEntity;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.*;
@@ -9,12 +9,11 @@ import org.hibernate.validator.constraints.Length;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "inboxes")
-public class Inbox extends BaseCreatedModel {
+public class Inbox extends BaseCreatedEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(columnDefinition = "BINARY(16)")
   private UUID id;
 

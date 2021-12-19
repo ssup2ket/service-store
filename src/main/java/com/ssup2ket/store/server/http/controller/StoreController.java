@@ -1,7 +1,7 @@
 package com.ssup2ket.store.server.http.controller;
 
 import com.ssup2ket.store.config.SwaggerConfig;
-import com.ssup2ket.store.domain.model.StoreInfo;
+import com.ssup2ket.store.domain.entity.StoreInfo;
 import com.ssup2ket.store.domain.service.StoreService;
 import com.ssup2ket.store.server.http.dto.StoreInfoListRes;
 import com.ssup2ket.store.server.http.dto.StoreInfoReq;

@@ -2,8 +2,7 @@ package com.ssup2ket.store.server.kafka.consumer;
 
 import brave.Tracer;
 import brave.propagation.TraceContextOrSamplingFlags;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssup2ket.store.domain.model.Inbox;
+import com.ssup2ket.store.domain.entity.Inbox;
 import com.ssup2ket.store.domain.service.ManagementService;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.kafka.message.DebezOutbox;
@@ -19,8 +18,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class UserConsumer {
-  private static final String AGGREGATE_TYPE = "User";
-  private static final String EVENT_TYPE_DELETE = "UserDelete";
+  private static final String AGGREGATE_TYPE_USER = "User";
+  private static final String EVENT_TYPE_USER_DELETED = "UserDeleted";
 
   @Autowired private ManagementService managementService;
   @Autowired private Tracer tracer;
@@ -44,7 +43,7 @@ public class UserConsumer {
           outbox.getPayload().getEventType(),
           outbox.getPayload().getEvent());
 
-      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_DELETE)) {
+      if (outbox.getPayload().getEventType().equals(EVENT_TYPE_USER_DELETED)) {
         // Set span context
         TraceContextOrSamplingFlags spanContext =
             SpanContext.GetSpanContextFromJson(spanContextJson);
@@ -54,14 +53,14 @@ public class UserConsumer {
         Inbox inbox =
             new Inbox(
                 msgUuid,
-                AGGREGATE_TYPE,
-                EVENT_TYPE_DELETE,
+                AGGREGATE_TYPE_USER,
+                EVENT_TYPE_USER_DELETED,
                 outbox.getPayload().getEvent(),
                 spanContextJson);
-        managementService.deleteStoreProudctByRemovedUserMq(inbox);
+        managementService.deleteStoreProudctByDeletedUserMq(inbox);
       }
-    } catch (JsonProcessingException e) {
-      ack.acknowledge();
+    } catch (Exception e) {
+      log.error("User consumer exception", e);
       throw new RuntimeException(e);
     }
     ack.acknowledge();

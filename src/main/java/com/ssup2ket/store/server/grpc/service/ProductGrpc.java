@@ -1,6 +1,6 @@
 package com.ssup2ket.store.server.grpc.service;
 
-import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.entity.ProductInfo;
 import com.ssup2ket.store.domain.service.ProductService;
 import com.ssup2ket.store.proto.*;
 import com.ssup2ket.store.proto.ProductGrpc.ProductImplBase;

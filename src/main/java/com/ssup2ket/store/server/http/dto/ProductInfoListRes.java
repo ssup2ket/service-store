@@ -1,6 +1,6 @@
 package com.ssup2ket.store.server.http.dto;
 
-import com.ssup2ket.store.domain.model.ProductInfo;
+import com.ssup2ket.store.domain.entity.ProductInfo;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

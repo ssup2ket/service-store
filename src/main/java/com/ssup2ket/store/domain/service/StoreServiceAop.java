@@ -1,6 +1,6 @@
 package com.ssup2ket.store.domain.service;
 
-import com.ssup2ket.store.domain.model.StoreInfo;
+import com.ssup2ket.store.domain.entity.StoreInfo;
 import com.ssup2ket.store.domain.repository.StoreInfoPrimaryRepo;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
 import java.util.UUID;
@@ -31,7 +31,7 @@ public class StoreServiceAop {
     } else if (joinPoint.getArgs()[0] instanceof StoreInfo) {
       storeId = ((StoreInfo) joinPoint.getArgs()[0]).getId();
     } else {
-      throw new IllegalArgumentException("Wrong product UUID");
+      throw new IllegalArgumentException("Wrong store UUID");
     }
 
     // Get store info

@@ -1,6 +1,6 @@
 package com.ssup2ket.store.domain.service;
 
-import com.ssup2ket.store.domain.model.StoreInfo;
+import com.ssup2ket.store.domain.entity.StoreInfo;
 import java.util.List;
 import java.util.UUID;
 
