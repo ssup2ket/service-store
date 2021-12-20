@@ -18,9 +18,9 @@ public interface ProductInfoPrimaryRepo extends JpaRepository<ProductInfo, UUID>
 
   @Modifying
   @Query(value = "UPDATE ProductInfo p SET p.quantity = p.quantity + :increment WHERE id = :id")
-  public int incraseQuantity(@Param("id") UUID id, @Param("increment") int increment);
+  public int increaseQuantity(@Param("id") UUID id, @Param("increment") int increment);
 
   @Modifying
   @Query(value = "UPDATE ProductInfo p SET p.quantity = p.quantity - :decrement WHERE id = :id")
-  public int decraseQuantity(@Param("id") UUID id, @Param("decrement") int decrement);
+  public int decreaseQuantity(@Param("id") UUID id, @Param("decrement") int decrement);
 }

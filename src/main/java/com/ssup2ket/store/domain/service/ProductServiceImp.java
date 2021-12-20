@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,74 +124,40 @@ public class ProductServiceImp implements ProductService {
   @Override
   @Transactional
   public int increaseProductQuantity(UUID storeId, UUID productId, int increment) {
-    productInfoPrimaryRepo.incraseQuantity(productId, increment);
+    productInfoPrimaryRepo.increaseQuantity(productId, increment);
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
     return productInfo.getQuantity();
   }
 
   @Override
-  public void increaseProductQuantityMq(Inbox inbox) {
-    try {
-      increaseProductQuantityMqTx(inbox);
-    } catch (DuplicateKeyException e) {
-      // Ignore dup exception
-      log.info("Occur DB duplicate key exception. Ignore it");
-    } catch (Exception e) {
-      log.error("Increase product error", e);
-      increaseProductQuantityMqError(inbox);
-    }
-  }
-
   @Transactional
-  public void increaseProductQuantityMqTx(Inbox inbox) {
+  public void increaseProductQuantityMq(Inbox inbox) {
     // Get order info from inbox
     ProductOrder productOrder = new ProductOrder(inbox.getPayload());
 
     // Save inbox to prevent duplicate action
     if (inboxPrimaryRepo.findById(productOrder.getId()).isPresent()) {
-      throw new DuplicateKeyException("duplicated inbox");
+      log.warn("Duplicated inbox");
+      return;
     }
     inboxPrimaryRepo.save(inbox);
-
-    // Increment
-    productInfoPrimaryRepo.incraseQuantity(productOrder.getId(), productOrder.getCount());
 
     try {
       // Get span context as JSON
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
+
+      // Increment
+      productInfoPrimaryRepo.increaseQuantity(productOrder.getId(), productOrder.getCount());
+      ProductInfo productInfo = productInfoPrimaryRepo.getById(productOrder.getId());
 
       // Create outbox to publish product increment event
       Outbox outbox =
           new Outbox(
               null,
               AGGREGATE_TYPE_PRODUCT,
-              productOrder.getId().toString(),
+              productInfo.getId().toString(),
               EVENT_TYPE_PRODUCT_INCREASED,
-              "",
-              spanContextJson);
-      outboxPrimaryRepo.save(outbox);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Transactional
-  public void increaseProductQuantityMqError(Inbox inbox) {
-    // Get order info from inbox
-    ProductOrder productOrder = new ProductOrder(inbox.getPayload());
-
-    try {
-      // Get span context as JSON
-      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
-
-      // Create outbox to public product increment error event
-      Outbox outbox =
-          new Outbox(
-              null,
-              AGGREGATE_TYPE_PRODUCT,
-              productOrder.getId().toString(),
-              EVENT_TYPE_PRODUCT_INCREASED_ERROR,
-              "",
+              productInfo.toJsonString(),
               spanContextJson);
       outboxPrimaryRepo.save(outbox);
     } catch (Exception e) {
@@ -203,7 +168,7 @@ public class ProductServiceImp implements ProductService {
   @Override
   @Transactional
   public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement) {
-    productInfoPrimaryRepo.decraseQuantity(productId, decrement);
+    productInfoPrimaryRepo.decreaseQuantity(productId, decrement);
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
     if (productInfo.getQuantity() < 0) {
       throw new RuntimeException("insuffcient product quantity");
@@ -212,74 +177,54 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
-  public void decreaseProductQuantityMq(Inbox inbox) {
-    try {
-      decreaseProductQuantityMqTx(inbox);
-    } catch (DuplicateKeyException e) {
-      // Ignore dup exception
-      log.info("Occur DB duplicate key exception. Ignore it");
-    } catch (Exception e) {
-      log.error("Decrese product error", e);
-      decreaseProductQuantityMqError(inbox);
-    }
-  }
-
   @Transactional
-  public void decreaseProductQuantityMqTx(Inbox inbox) {
+  public void decreaseProductQuantityMq(Inbox inbox) {
     // Get order info from inbox
     ProductOrder productOrder = new ProductOrder(inbox.getPayload());
 
     // Check and Save inbox to prevent duplicate action
     if (inboxPrimaryRepo.findById(inbox.getId()).isPresent()) {
-      throw new DuplicateKeyException("duplicated inbox");
+      log.warn("Duplicated inbox");
+      return;
     }
     inboxPrimaryRepo.save(inbox);
 
     // Decrement
-    productInfoPrimaryRepo.decraseQuantity(productOrder.getId(), productOrder.getCount());
+    productInfoPrimaryRepo.decreaseQuantity(productOrder.getId(), productOrder.getCount());
     ProductInfo productInfo = productInfoPrimaryRepo.getById(productOrder.getId());
-    if (productInfo.getQuantity() < 0) {
-      throw new RuntimeException("insufficient product quantity");
-    }
 
     try {
       // Get span context as JSON
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
 
-      // Create outbox to publish product decrement event
-      Outbox outbox =
-          new Outbox(
-              null,
-              AGGREGATE_TYPE_PRODUCT,
-              productInfo.getId().toString(),
-              EVENT_TYPE_PRODUCT_DECREASED,
-              productInfo.toJsonString(),
-              spanContextJson);
-      outboxPrimaryRepo.save(outbox);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+      if (productInfo.getQuantity() < 0) {
+        // If lack of quantity, increase it and send decrease error
+        log.warn("Lack of quantity");
+        productInfoPrimaryRepo.increaseQuantity(productOrder.getId(), productOrder.getCount());
 
-  @Transactional
-  public void decreaseProductQuantityMqError(Inbox inbox) {
-    // Get order info from inbox
-    ProductOrder productOrder = new ProductOrder(inbox.getPayload());
-
-    try {
-      // Get span context as JSON
-      String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
-
-      // Create outbox to publish product decrement error event
-      Outbox outbox =
-          new Outbox(
-              null,
-              AGGREGATE_TYPE_PRODUCT,
-              productOrder.getId().toString(),
-              EVENT_TYPE_PRODUCT_DECREASED_ERROR,
-              "",
-              spanContextJson);
-      outboxPrimaryRepo.save(outbox);
+        // Create outbox to publish product decrement event
+        Outbox outbox =
+            new Outbox(
+                null,
+                AGGREGATE_TYPE_PRODUCT,
+                productOrder.getId().toString(),
+                EVENT_TYPE_PRODUCT_DECREASED_ERROR,
+                "",
+                spanContextJson);
+        outboxPrimaryRepo.save(outbox);
+        return;
+      } else {
+        // Create outbox to publish product decrement event
+        Outbox outbox =
+            new Outbox(
+                null,
+                AGGREGATE_TYPE_PRODUCT,
+                productInfo.getId().toString(),
+                EVENT_TYPE_PRODUCT_DECREASED,
+                productInfo.toJsonString(),
+                spanContextJson);
+        outboxPrimaryRepo.save(outbox);
+      }
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
