@@ -1,5 +1,11 @@
 # ssup2ket-store-service
 
+* Architecture
+* [Swagger](https://ssup2ket.github.io/ssup2ket-store-service/api/openapi/swagger.html)
+* ER Diagram
+
+## Used main maven repos and tools
+
 ## Reference
 
 * Multiple Datasource 
