@@ -115,6 +115,12 @@ task bootRunEnv(type: Exec) {
 	commandLine 'sh', '-c', '. scripts/env-local && exec ./gradlew bootRun'
 }
 
+task genSwaggerSpec(type: Exec) {
+	group 'Application'
+	description 'Generate swagger spec'
+	commandLine 'sh', '-c', 'echo "var api_spec =" > api/openapi/api.json.js && curl http://localhost/v1/swagger/spec | jq \'.servers[0].url="http:://ssup2ket.com" | .servers[0].description="ssup2ket store service"\' >> api/openapi/api.json.js'
+}
+
 task buildDockerfile(type: Exec) {
 	group 'Build'
 	description 'Builds an Container Image from Dockerfile'
