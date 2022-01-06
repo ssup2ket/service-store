@@ -1,10 +1,22 @@
 # ssup2ket-store-service
 
-* Architecture
+ssup2ket-store-service is the service responsible for store and product management in the [ssup2ket](https://github.com/ssup2ket/ssup2ket) Project. ssup2ket-store-service follows this [considerations](https://github.com/ssup2ket/ssup2ket#ssup2ket-service-considerations).
+
+* [Architecture](https://drive.google.com/file/d/1m44L2pvL0DM-6F64KgDTiN_UPGwk3qw7/view?usp=sharing)
 * [Swagger](https://ssup2ket.github.io/ssup2ket-store-service/api/openapi/swagger.html)
-* ER Diagram
+* [ER Diagram](https://drive.google.com/file/d/1JWsro80sf3KCl3Aq9kx7h8i6tqyfWGCx/view?usp=sharing)
 
 ## Used main maven repos and tools
+
+ssup2ket-store-service uses following maven repos and tools
+
+* **HTTP Server** - [Spring MVC](https://spring.io/guides/gs/serving-web-content/)
+* **GRPC Server** - [gRPC Spring Starter](https://yidongnan.github.io/grpc-spring-boot-starter/en/)
+* **MySQL** - [Spring Data JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+* **Kafka** - [Spring Kafka](https://spring.io/projects/spring-kafka), [Debezium Outbox](https://debezium.io/documentation/reference/1.8/transformations/outbox-event-router.html)
+* **Logging** - [Logback](https://logback.qos.ch/), [Spring Cloud Slueth/Zipkin](https://spring.io/projects/spring-cloud-sleuth/), 
+* **Continuous Integration** - [Spring Test](https://spring.io/guides/gs/testing-web/), [Github Actions](https://github.com/features/actions)
+* **Continuous Deployment** - [K8s](https://kubernetes.io/), [ArgoCD](https://argo-cd.readthedocs.io/en/stable/), [ArgoCD Image Updater](https://github.com/argoproj-labs/argocd-image-updater/), [Kustomize](https://kustomize.io/)
 
 ## Reference
 
