@@ -53,10 +53,10 @@ public class ProductServiceAop {
   private void validateProductFromPrimaryDB(JoinPoint joinPoint) {
     // Get product UUID
     UUID productId;
-    if (joinPoint.getArgs()[1] instanceof UUID) {
+    if (joinPoint.getArgs()[0] instanceof ProductInfo) {
+      productId = ((ProductInfo) joinPoint.getArgs()[0]).getId();
+    } else if (joinPoint.getArgs()[1] instanceof UUID) {
       productId = (UUID) joinPoint.getArgs()[1];
-    } else if (joinPoint.getArgs()[1] instanceof ProductInfo) {
-      productId = ((ProductInfo) joinPoint.getArgs()[0]).getStoreId();
     } else {
       throw new IllegalArgumentException("Wrong product UUID");
     }
