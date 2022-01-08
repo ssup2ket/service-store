@@ -9,10 +9,10 @@ import io.grpc.stub.StreamObserver;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import org.lognet.springboot.grpc.GRpcService;
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@GRpcService
+@GrpcService
 public class ProductGrpc extends ProductImplBase {
   @Autowired ProductService productService;
 
