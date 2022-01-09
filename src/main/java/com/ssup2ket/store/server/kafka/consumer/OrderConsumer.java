@@ -4,6 +4,7 @@ import brave.Tracer;
 import brave.propagation.TraceContextOrSamplingFlags;
 import com.ssup2ket.store.domain.entity.Inbox;
 import com.ssup2ket.store.domain.service.ProductService;
+import com.ssup2ket.store.pkg.message.Converter;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.error.ProductNotFoundException;
 import com.ssup2ket.store.server.error.StoreNotFoundException;
@@ -31,15 +32,15 @@ public class OrderConsumer {
       topics = "#{${spring.kafka.topic.prefix}}-ssup2ket-order-outbox-Order",
       groupId = "#{${spring.kafka.groupid.prefix}}-ssup2ket-store-order")
   public void consume(
-      @Header("id") String msgId,
+      @Header("id") String msgIdBase64,
       @Header("spanContext") String spanContextJson,
       @Payload String msg,
       Acknowledgment ack) {
 
     try {
       // Get msg info
-      UUID msgUuid = ConsumerHelper.getMsgUuidFromStringId(msgId);
-      DebezOutbox outbox = ConsumerHelper.getDebezOutboxFromMsg(msgId, msg);
+      UUID msgId = Converter.getUuidFromBase64(msgIdBase64);
+      DebezOutbox outbox = DebezOutbox.getDebezOutboxFromMsg(msgId, msg);
       log.info(
           "Order Consumer id:{} eventType:{} event:{}",
           outbox.getId().toString(),
@@ -55,7 +56,7 @@ public class OrderConsumer {
         // Call decrese product quantity service
         Inbox inbox =
             new Inbox(
-                msgUuid,
+                msgId,
                 AGGREGATE_TYPE_ORDER,
                 EVENT_TYPE_ORDER_PAID,
                 outbox.getPayload().getEvent(),
@@ -71,7 +72,7 @@ public class OrderConsumer {
         // Call increase product quantity service
         Inbox inbox =
             new Inbox(
-                msgUuid,
+                msgId,
                 AGGREGATE_TYPE_ORDER,
                 EVENT_TYPE_ORDER_PAID,
                 outbox.getPayload().getEvent(),

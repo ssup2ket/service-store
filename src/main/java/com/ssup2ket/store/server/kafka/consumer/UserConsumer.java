@@ -4,6 +4,7 @@ import brave.Tracer;
 import brave.propagation.TraceContextOrSamplingFlags;
 import com.ssup2ket.store.domain.entity.Inbox;
 import com.ssup2ket.store.domain.service.ManagementService;
+import com.ssup2ket.store.pkg.message.Converter;
 import com.ssup2ket.store.pkg.tracing.SpanContext;
 import com.ssup2ket.store.server.kafka.message.DebezOutbox;
 import java.util.UUID;
@@ -28,15 +29,15 @@ public class UserConsumer {
       topics = "#{${spring.kafka.topic.prefix}}-ssup2ket-auth-outbox-User",
       groupId = "#{${spring.kafka.groupid.prefix}}-ssup2ket-store-user")
   public void consume(
-      @Header("id") String msgId,
+      @Header("id") String msgIdBase64,
       @Header("spanContext") String spanContextJson,
       @Payload String msg,
       Acknowledgment ack) {
 
     try {
       // Get msg info
-      UUID msgUuid = ConsumerHelper.getMsgUuidFromStringId(msgId);
-      DebezOutbox outbox = ConsumerHelper.getDebezOutboxFromMsg(msgId, msg);
+      UUID msgId = Converter.getUuidFromBase64(msgIdBase64);
+      DebezOutbox outbox = DebezOutbox.getDebezOutboxFromMsg(msgId, msg);
       log.info(
           "User Consumer id:{} eventType:{} event:{}",
           outbox.getId().toString(),
@@ -52,7 +53,7 @@ public class UserConsumer {
         // Call delete service
         Inbox inbox =
             new Inbox(
-                msgUuid,
+                msgId,
                 AGGREGATE_TYPE_USER,
                 EVENT_TYPE_USER_DELETED,
                 outbox.getPayload().getEvent(),
