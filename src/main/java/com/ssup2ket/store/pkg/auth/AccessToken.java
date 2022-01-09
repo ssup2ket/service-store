@@ -36,11 +36,16 @@ public class AccessToken extends AbstractAuthenticationToken {
 
   @Override
   public String getPrincipal() {
+    if (userId == null) {
+      // When userId isn't set, return emptyId string for grpc authorization.
+      return "emptyId";
+    }
     return userId.toString();
   }
 
   @Override
   public Object getCredentials() {
+    // No credential
     return null;
   }
 }

@@ -1,4 +1,4 @@
-package com.ssup2ket.store.pkg.tracing;
+package com.ssup2ket.store.server.http.filter;
 
 import brave.Span;
 import brave.Tracer;
@@ -15,10 +15,10 @@ import org.springframework.web.filter.GenericFilterBean;
 
 @Component
 @Order(SleuthWebProperties.TRACING_FILTER_ORDER + 1)
-public class SpanIdResponse extends GenericFilterBean {
+public class SpanIdResponseFilter extends GenericFilterBean {
   private final Tracer tracer;
 
-  SpanIdResponse(Tracer tracer) {
+  SpanIdResponseFilter(Tracer tracer) {
     this.tracer = tracer;
   }
 
