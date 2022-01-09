@@ -1,5 +1,6 @@
-package com.ssup2ket.store.pkg.auth;
+package com.ssup2ket.store.server.http.filter;
 
+import com.ssup2ket.store.pkg.auth.AccessToken;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

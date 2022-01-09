@@ -1,7 +1,7 @@
 package com.ssup2ket.store.config;
 
-import com.ssup2ket.store.pkg.auth.AccessTokenFilter;
 import com.ssup2ket.store.server.http.error.HttpAuthExceptionHandler;
+import com.ssup2ket.store.server.http.filter.AccessTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
