@@ -25,15 +25,13 @@ public class SpanIdResponseFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    Span currentSpan = this.tracer.currentSpan();
-    if (currentSpan == null) {
-      filterChain.doFilter(request, response);
-      return;
+    // Copy trace ID to response
+    Span currentSpan = tracer.currentSpan();
+    if (currentSpan != null) {
+      ((HttpServletResponse) response)
+          .addHeader("X-B3-TraceId", currentSpan.context().traceIdString());
     }
 
-    // Copy trace ID to response
-    ((HttpServletResponse) response)
-        .addHeader("X-B3-TraceId", currentSpan.context().traceIdString());
     filterChain.doFilter(request, response);
   }
 }
