@@ -4,7 +4,6 @@ import com.ssup2ket.store.domain.entity.ProductInfo;
 import com.ssup2ket.store.domain.service.ProductService;
 import com.ssup2ket.store.proto.*;
 import com.ssup2ket.store.proto.ProductGrpc.ProductImplBase;
-import com.ssup2ket.store.server.grpc.error.GrpcExceptionHandler;
 import io.grpc.stub.StreamObserver;
 import java.util.Iterator;
 import java.util.List;
@@ -18,18 +17,14 @@ public class ProductGrpc extends ProductImplBase {
 
   @Override
   public void listProduct(ProductListReq request, StreamObserver<ProductListRes> responseObserver) {
-    try {
-      ProductListRes res =
-          convertProductInfoListResToRes(
-              productService.listProductInfos(
-                  UUID.fromString(request.getStoreId()),
-                  request.getOffset() / request.getLimit(),
-                  request.getLimit()));
-      responseObserver.onNext(res);
-      responseObserver.onCompleted();
-    } catch (Throwable t) {
-      GrpcExceptionHandler.handler(t, responseObserver);
-    }
+    ProductListRes res =
+        convertProductInfoListResToRes(
+            productService.listProductInfos(
+                UUID.fromString(request.getStoreId()),
+                request.getOffset() / request.getLimit(),
+                request.getLimit()));
+    responseObserver.onNext(res);
+    responseObserver.onCompleted();
   }
 
   @Override

@@ -4,7 +4,6 @@ import com.ssup2ket.store.domain.entity.StoreInfo;
 import com.ssup2ket.store.domain.service.StoreService;
 import com.ssup2ket.store.proto.*;
 import com.ssup2ket.store.proto.StoreGrpc.StoreImplBase;
-import com.ssup2ket.store.server.grpc.error.GrpcExceptionHandler;
 import io.grpc.stub.StreamObserver;
 import java.util.Iterator;
 import java.util.List;
@@ -18,28 +17,20 @@ public class StoreGrpc extends StoreImplBase {
 
   @Override
   public void listStore(StoreListReq request, StreamObserver<StoreListRes> responseObserver) {
-    try {
-      StoreListRes res =
-          convertStoreInfoListResToRes(
-              storeService.listStoreInfos(
-                  request.getOffset() / request.getLimit(), request.getLimit()));
-      responseObserver.onNext(res);
-      responseObserver.onCompleted();
-    } catch (Throwable t) {
-      GrpcExceptionHandler.handler(t, responseObserver);
-    }
+    StoreListRes res =
+        convertStoreInfoListResToRes(
+            storeService.listStoreInfos(
+                request.getOffset() / request.getLimit(), request.getLimit()));
+    responseObserver.onNext(res);
+    responseObserver.onCompleted();
   }
 
   @Override
   public void createStore(StoreCreateReq request, StreamObserver<StoreInfoRes> responseObserver) {
-    try {
-      StoreInfo req = convertStoreCreateReqToModel(request);
-      StoreInfo res = storeService.createStoreInfo(req);
-      responseObserver.onNext(convertStoreInfoToRes(res));
-      responseObserver.onCompleted();
-    } catch (Throwable t) {
-      GrpcExceptionHandler.handler(t, responseObserver);
-    }
+    StoreInfo req = convertStoreCreateReqToModel(request);
+    StoreInfo res = storeService.createStoreInfo(req);
+    responseObserver.onNext(convertStoreInfoToRes(res));
+    responseObserver.onCompleted();
   }
 
   @Override
@@ -51,25 +42,17 @@ public class StoreGrpc extends StoreImplBase {
 
   @Override
   public void updateStore(StoreUpdateReq request, StreamObserver<Empty> responseObserver) {
-    try {
-      StoreInfo reqStoreInfo = convertStoreUpdateReqToModel(request);
-      storeService.updateStoreInfo(reqStoreInfo);
-      responseObserver.onNext(Empty.newBuilder().build());
-      responseObserver.onCompleted();
-    } catch (Throwable t) {
-      GrpcExceptionHandler.handler(t, responseObserver);
-    }
+    StoreInfo reqStoreInfo = convertStoreUpdateReqToModel(request);
+    storeService.updateStoreInfo(reqStoreInfo);
+    responseObserver.onNext(Empty.newBuilder().build());
+    responseObserver.onCompleted();
   }
 
   @Override
   public void deleteStore(StoreIdReq request, StreamObserver<Empty> responseObserver) {
-    try {
-      storeService.deleteStoreInfo(UUID.fromString(request.getId()));
-      responseObserver.onNext(Empty.newBuilder().build());
-      responseObserver.onCompleted();
-    } catch (Throwable t) {
-      GrpcExceptionHandler.handler(t, responseObserver);
-    }
+    storeService.deleteStoreInfo(UUID.fromString(request.getId()));
+    responseObserver.onNext(Empty.newBuilder().build());
+    responseObserver.onCompleted();
   }
 
   public StoreInfo convertStoreCreateReqToModel(StoreCreateReq request) {
