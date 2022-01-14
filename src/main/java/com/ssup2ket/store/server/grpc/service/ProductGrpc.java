@@ -61,6 +61,40 @@ public class ProductGrpc extends ProductImplBase {
     responseObserver.onCompleted();
   }
 
+  @Override
+  public void increaseQuantityProduct(
+      ProductQuantityReq request, StreamObserver<ProductQuantityRes> responseObserver) {
+    int res =
+        productService.increaseProductQuantity(
+            UUID.fromString(request.getStoreId()),
+            UUID.fromString(request.getId()),
+            request.getQuantity());
+    responseObserver.onNext(convertQuantityToRes(request.getId(), res));
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void decreaseQuantityProduct(
+      ProductQuantityReq request, StreamObserver<ProductQuantityRes> responseObserver) {
+    int res =
+        productService.decreaseProductQuantity(
+            UUID.fromString(request.getStoreId()),
+            UUID.fromString(request.getId()),
+            request.getQuantity());
+    responseObserver.onNext(convertQuantityToRes(request.getId(), res));
+    responseObserver.onCompleted();
+  }
+
+  public ProductListRes convertProductInfoListResToRes(List<ProductInfo> storeInfoList) {
+    // Make up storetory info response list
+    ProductListRes.Builder builder = ProductListRes.newBuilder();
+    Iterator<ProductInfo> iter = storeInfoList.iterator();
+    while (iter.hasNext()) {
+      builder.addProducts(convertProductInfoToRes(iter.next()));
+    }
+    return builder.build();
+  }
+
   public ProductInfo convertProductCreateReqToModel(ProductCreateReq request) {
     return new ProductInfo(
         null,
@@ -85,17 +119,14 @@ public class ProductGrpc extends ProductImplBase {
             .setId(storeInfo.getId().toString())
             .setName(storeInfo.getName())
             .setDescription(storeInfo.getDescription())
-            .setStoreId(storeInfo.getStoreId().toString());
+            .setStoreId(storeInfo.getStoreId().toString())
+            .setQuantity(storeInfo.getQuantity());
     return builder.build();
   }
 
-  public ProductListRes convertProductInfoListResToRes(List<ProductInfo> storeInfoList) {
-    // Make up storetory info response list
-    ProductListRes.Builder builder = ProductListRes.newBuilder();
-    Iterator<ProductInfo> iter = storeInfoList.iterator();
-    while (iter.hasNext()) {
-      builder.addProducts(convertProductInfoToRes(iter.next()));
-    }
+  public ProductQuantityRes convertQuantityToRes(String productId, int quantity) {
+    ProductQuantityRes.Builder builder =
+        ProductQuantityRes.newBuilder().setId(productId).setQuantity(quantity);
     return builder.build();
   }
 }

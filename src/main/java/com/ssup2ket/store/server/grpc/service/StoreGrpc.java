@@ -55,6 +55,16 @@ public class StoreGrpc extends StoreImplBase {
     responseObserver.onCompleted();
   }
 
+  public StoreListRes convertStoreInfoListResToRes(List<StoreInfo> storeInfoList) {
+    // Make up store info response list
+    StoreListRes.Builder builder = StoreListRes.newBuilder();
+    Iterator<StoreInfo> iter = storeInfoList.iterator();
+    while (iter.hasNext()) {
+      builder.addStores(convertStoreInfoToRes(iter.next()));
+    }
+    return builder.build();
+  }
+
   public StoreInfo convertStoreCreateReqToModel(StoreCreateReq request) {
     return new StoreInfo(null, request.getName(), request.getDescription(), null);
   }
@@ -70,16 +80,6 @@ public class StoreGrpc extends StoreImplBase {
             .setId(storeInfo.getId().toString())
             .setName(storeInfo.getName())
             .setDescription(storeInfo.getDescription());
-    return builder.build();
-  }
-
-  public StoreListRes convertStoreInfoListResToRes(List<StoreInfo> storeInfoList) {
-    // Make up store info response list
-    StoreListRes.Builder builder = StoreListRes.newBuilder();
-    Iterator<StoreInfo> iter = storeInfoList.iterator();
-    while (iter.hasNext()) {
-      builder.addStores(convertStoreInfoToRes(iter.next()));
-    }
     return builder.build();
   }
 }

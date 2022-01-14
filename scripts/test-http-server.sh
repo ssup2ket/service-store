@@ -14,6 +14,8 @@ PRODUCT_NAME="myproduct"
 PRODUCT_DESCRIPTION="mydescription"
 PRODUCT_DESCRIPTION2="mydescription2"
 PRODUCT_QUANTITY="10"
+PRODUCT_QUANTITY_INCDEC="5"
+PRODUCT_QUANTITY_RESULT="15"
 
 # -- Test cases --
 ## Create store
@@ -128,6 +130,52 @@ else
 fi
 echo "-- Get product end --"
 
+## Increase product
+echo "-- Increase product start --"
+RESPONSE=$(curl --no-progress-meter --write-out '\n%{http_code}' \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_ACCESS_TOKEN" \
+  -d "{\"quantity\": $PRODUCT_QUANTITY_INCDEC}" \
+  http://localhost/v1/stores/$STORE_ID/products/$PRODUCT_ID/quantity/increase)
+RESPONSE_HTTP_CODE=$(tail -n1 <<< "$RESPONSE")
+RESPONSE_BODY=$(sed '$ d' <<< "$RESPONSE")
+echo Response HTTP Code : $RESPONSE_HTTP_CODE
+echo Response Body : $RESPONSE_BODY
+if [ $RESPONSE_HTTP_CODE != "200" ]; then
+  EXIT_CODE=1
+else
+  PRODUCT_RESPONSE_QUANTITY=$(jq -r .quantity <<< "$RESPONSE_BODY")
+  if [ $PRODUCT_RESPONSE_QUANTITY != $PRODUCT_QUANTITY_RESULT ]; then
+    echo "!! Product quantity is diff !!"
+    EXIT_CODE=1
+  fi
+fi
+echo "-- Increase product end --"
+
+## Decrease product
+echo "-- Decrease product start --"
+RESPONSE=$(curl --no-progress-meter --write-out '\n%{http_code}' \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_ACCESS_TOKEN" \
+  -d "{\"quantity\": $PRODUCT_QUANTITY_INCDEC}" \
+  http://localhost/v1/stores/$STORE_ID/products/$PRODUCT_ID/quantity/decrease)
+RESPONSE_HTTP_CODE=$(tail -n1 <<< "$RESPONSE")
+RESPONSE_BODY=$(sed '$ d' <<< "$RESPONSE")
+echo Response HTTP Code : $RESPONSE_HTTP_CODE
+echo Response Body : $RESPONSE_BODY
+if [ $RESPONSE_HTTP_CODE != "200" ]; then
+  EXIT_CODE=1
+else
+  PRODUCT_RESPONSE_QUANTITY=$(jq -r .quantity <<< "$RESPONSE_BODY")
+  if [ $PRODUCT_RESPONSE_QUANTITY != $PRODUCT_QUANTITY ]; then
+    echo "!! Product quantity is diff !!"
+    EXIT_CODE=1
+  fi
+fi
+echo "-- Decrease product end --"
+
 ## Delete product
 echo "-- Delete product start --"
 RESPONSE=$(curl --no-progress-meter --write-out '\n%{http_code}' \
@@ -155,3 +203,6 @@ if [ $RESPONSE_HTTP_CODE != "200" ]; then
   EXIT_CODE=1
 fi
 echo "-- Delete store end --"
+
+# -- Exit --
+exit $EXIT_CODE

@@ -87,7 +87,8 @@ message ProductInfoRes {
 }
 
 message ProductQuantityRes {
-    int32 quantity = 1;
+    string id = 1;
+    int32 quantity = 2;
 }
 
 // Store service

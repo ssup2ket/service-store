@@ -4,6 +4,9 @@ import com.ssup2ket.store.pkg.auth.AccessToken;
 import com.ssup2ket.store.pkg.auth.AccessTokenProvider;
 import com.ssup2ket.store.proto.ProductGrpc;
 import com.ssup2ket.store.proto.StoreGrpc;
+import io.grpc.channelz.v1.ChannelzGrpc;
+import io.grpc.health.v1.HealthGrpc;
+import io.grpc.reflection.v1alpha.ServerReflectionGrpc;
 import java.util.ArrayList;
 import java.util.List;
 import net.devh.boot.grpc.server.security.authentication.BearerAuthenticationReader;
@@ -25,12 +28,21 @@ import org.springframework.security.authentication.ProviderManager;
 public class GrpcSecurityConfig {
   @Bean
   GrpcSecurityMetadataSource grpcSecurityMetadataSource() {
+    // Default rule
     final ManualGrpcSecurityMetadataSource source = new ManualGrpcSecurityMetadataSource();
+    source.setDefault(AccessPredicate.authenticated());
+
+    // Domain services
     source.set(StoreGrpc.getListStoreMethod(), AccessPredicate.permitAll());
     source.set(StoreGrpc.getGetStoreMethod(), AccessPredicate.permitAll());
     source.set(ProductGrpc.getListProductMethod(), AccessPredicate.permitAll());
     source.set(ProductGrpc.getGetProductMethod(), AccessPredicate.permitAll());
-    source.setDefault(AccessPredicate.authenticated());
+
+    // Common services
+    source.set(HealthGrpc.getServiceDescriptor(), AccessPredicate.permitAll());
+    source.set(ServerReflectionGrpc.getServiceDescriptor(), AccessPredicate.permitAll());
+    source.set(ChannelzGrpc.getServiceDescriptor(), AccessPredicate.permitAll());
+
     return source;
   }
 
