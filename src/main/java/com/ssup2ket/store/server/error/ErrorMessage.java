@@ -19,4 +19,9 @@ public class ErrorMessage {
   public static final String CONFLICT = "Conflict";
   public static final String CONFLICT_STORE = RESOURCE_STORE + CONFLICT;
   public static final String CONFLICT_PRODUCT = RESOURCE_PRODUCT + CONFLICT;
+
+  // Resource forbidden
+  public static final String FORBIDDEN = "Forbidden";
+  public static final String FORBIDDEN_STORE = RESOURCE_STORE + FORBIDDEN;
+  public static final String FORBIDDEN_PRODUCT = RESOURCE_PRODUCT + FORBIDDEN;
 }

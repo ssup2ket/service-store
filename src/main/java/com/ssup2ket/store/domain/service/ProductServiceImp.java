@@ -124,9 +124,12 @@ public class ProductServiceImp implements ProductService {
   @Override
   @Transactional
   public int increaseProductQuantity(UUID storeId, UUID productId, int increment) {
+    ProductInfo productInfo =
+        productInfoPrimaryRepo
+            .findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
     productInfoPrimaryRepo.increaseQuantity(productId, increment);
-    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
-    return productInfo.getQuantity();
+    return productInfo.getQuantity() + increment;
   }
 
   @Override
@@ -147,8 +150,12 @@ public class ProductServiceImp implements ProductService {
       String spanContextJson = SpanContext.GetSpanContextAsJson(tracer.currentSpan());
 
       // Increment
+      ProductInfo productInfo =
+          productInfoPrimaryRepo
+              .findById(productOrder.getId())
+              .orElseThrow(() -> new ProductNotFoundException(productOrder.getId()));
       productInfoPrimaryRepo.increaseQuantity(productOrder.getId(), productOrder.getCount());
-      ProductInfo productInfo = productInfoPrimaryRepo.getById(productOrder.getId());
+      productInfo.setQuantity(productInfo.getQuantity() + productOrder.getCount());
 
       // Create outbox to publish product increment event
       Outbox outbox =
@@ -168,12 +175,15 @@ public class ProductServiceImp implements ProductService {
   @Override
   @Transactional
   public int decreaseProductQuantity(UUID storeId, UUID productId, int decrement) {
+    ProductInfo productInfo =
+        productInfoPrimaryRepo
+            .findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
     productInfoPrimaryRepo.decreaseQuantity(productId, decrement);
-    ProductInfo productInfo = productInfoPrimaryRepo.getById(productId);
-    if (productInfo.getQuantity() < 0) {
-      throw new RuntimeException("insuffcient product quantity");
+    if (productInfo.getQuantity() - decrement < 0) {
+      throw new RuntimeException("insufficient product quantity");
     }
-    return productInfo.getQuantity();
+    return productInfo.getQuantity() - decrement;
   }
 
   @Override
@@ -190,8 +200,12 @@ public class ProductServiceImp implements ProductService {
     inboxPrimaryRepo.save(inbox);
 
     // Decrement
+    ProductInfo productInfo =
+        productInfoPrimaryRepo
+            .findById(productOrder.getId())
+            .orElseThrow(() -> new ProductNotFoundException(productOrder.getId()));
     productInfoPrimaryRepo.decreaseQuantity(productOrder.getId(), productOrder.getCount());
-    ProductInfo productInfo = productInfoPrimaryRepo.getById(productOrder.getId());
+    productInfo.setQuantity(productInfo.getQuantity() - productOrder.getCount());
 
     try {
       // Get span context as JSON

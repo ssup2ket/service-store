@@ -19,4 +19,9 @@ public class ErrorCode {
   public static final String CONFLICT = "CONFLICT";
   public static final String CONFLICT_STORE = CONFLICT + RESOURCE_STORE;
   public static final String CONFLICT_PRODUCT = CONFLICT + RESOURCE_PRODUCT;
+
+  // Resource forbidden
+  public static final String FORBIDDEN = "FORBIDDEN";
+  public static final String FORBIDDEN_STORE = FORBIDDEN + RESOURCE_STORE;
+  public static final String FORBIDDEN_PRODUCT = FORBIDDEN + RESOURCE_PRODUCT;
 }

@@ -88,6 +88,24 @@ if [ $? != 0 ] ; then
 fi
 echo "-- Update product end --"
 
+## Update product with user token / Fail
+echo "-- Update product with user token start --"
+RESPONSE=$(grpcurl -plaintext -format-error \
+  -H "authorization: Bearer $USER_ACCESS_TOKEN" \
+  -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\", \"name\": \"$PRODUCT_NAME\", \"description\": \"$PRODUCT_DESCRIPTION2\" ,\"quantity\": $PRODUCT_QUANTITY}" \
+  localhost:9090 Product/UpdateProduct)
+echo Response : $RESPONSE
+if [ $? != 0 ] ; then
+  EXIT_CODE=1
+else 
+  CODE=$(jq -r .code <<< "$RESPONSE")
+  if [ $CODE != "5" ] ; then
+    echo "-- Wrong code --"
+    EXIT_CODE=1
+  fi
+fi
+echo "-- Update product with user token end --"
+
 ## Get product
 echo "-- Get proudct start --"
 RESPONSE=$(grpcurl -plaintext -format-error \

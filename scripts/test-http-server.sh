@@ -108,6 +108,21 @@ if [ $RESPONSE_HTTP_CODE != "200" ]; then
 fi
 echo "-- Update product end --"
 
+## Update product with user token / Fail
+echo "-- Update product with user token start --"
+RESPONSE=$(curl --no-progress-meter --write-out '\n%{http_code}' \
+  -X PUT \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $USER_ACCESS_TOKEN" \
+  -d "{\"name\": \"$PRODUCT_NAME\", \"description\": \"$PRODUCT_DESCRIPTION2\", \"quantity\": $PRODUCT_QUANTITY}" \
+  http://localhost/v1/stores/$STORE_ID/products/$PRODUCT_ID)
+RESPONSE_HTTP_CODE=$(tail -n1 <<< "$RESPONSE")
+echo Response HTTP Code : $RESPONSE_HTTP_CODE
+if [ $RESPONSE_HTTP_CODE != "403" ]; then
+  EXIT_CODE=1
+fi
+echo "-- Update product with user token end --"
+
 ## Get product
 echo "-- Get product start --"
 RESPONSE=$(curl --no-progress-meter --write-out '\n%{http_code}' \

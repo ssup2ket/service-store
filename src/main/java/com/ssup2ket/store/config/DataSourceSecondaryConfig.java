@@ -12,10 +12,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableTransactionManagement
 @EnableJpaRepositories(
     basePackages = "com.ssup2ket.store.domain.repository",
     entityManagerFactoryRef = "secondaryEntityManagerFactory",
@@ -25,8 +23,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
             type = FilterType.REGEX,
             pattern = {".*Secondary.*"}))
 public class DataSourceSecondaryConfig {
-  static String test = "test";
-
   @Bean
   @ConfigurationProperties(prefix = "spring.datasource.secondary")
   public DataSource secondaryDataSource() {
