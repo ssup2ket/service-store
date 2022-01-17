@@ -24,12 +24,12 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"name\": \"$STORE_NAME\", \"description\": \"$STORE_DESCRIPTION\"}" \
   localhost:9090 Store/CreateStore)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 else
   STORE_ID=$(jq -r .id <<< "$RESPONSE")
 fi
+echo Response : $RESPONSE
 echo "-- Create store end --"
 
 ## Update store
@@ -38,10 +38,10 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$STORE_ID\", \"name\": \"$STORE_NAME\", \"description\": \"$STORE_DESCRIPTION2\"}" \
   localhost:9090 Store/UpdateStore)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 fi
+echo Response : $RESPONSE
 echo "-- Update store end --"
 
 ## Get store
@@ -50,7 +50,6 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$STORE_ID\"}" \
   localhost:9090 Store/GetStore)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 else
@@ -60,6 +59,7 @@ else
     EXIT_CODE=1
   fi
 fi
+echo Response : $RESPONSE
 echo "-- Get store end --"
 
 ## Create product
@@ -68,12 +68,12 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"name\": \"$PRODUCT_NAME\", \"storeId\": \"$STORE_ID\", \"description\": \"$PRODUCT_DESCRIPTION\", \"quantity\": $PRODUCT_QUANTITY}" \
   localhost:9090 Product/CreateProduct)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 else
   PRODUCT_ID=$(jq -r .id <<< "$RESPONSE")
 fi
+echo Response : $RESPONSE
 echo "-- Create product end --"
 
 ## Update product
@@ -82,10 +82,10 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\", \"name\": \"$PRODUCT_NAME\", \"description\": \"$PRODUCT_DESCRIPTION2\" ,\"quantity\": $PRODUCT_QUANTITY}" \
   localhost:9090 Product/UpdateProduct)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 fi
+echo Response : $RESPONSE
 echo "-- Update product end --"
 
 ## Update product with user token / Fail
@@ -94,8 +94,7 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $USER_ACCESS_TOKEN" \
   -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\", \"name\": \"$PRODUCT_NAME\", \"description\": \"$PRODUCT_DESCRIPTION2\" ,\"quantity\": $PRODUCT_QUANTITY}" \
   localhost:9090 Product/UpdateProduct)
-echo Response : $RESPONSE
-if [ $? != 0 ] ; then
+if [ $? == 0 ] ; then
   EXIT_CODE=1
 else 
   CODE=$(jq -r .code <<< "$RESPONSE")
@@ -104,6 +103,7 @@ else
     EXIT_CODE=1
   fi
 fi
+echo Response : $RESPONSE
 echo "-- Update product with user token end --"
 
 ## Get product
@@ -112,7 +112,6 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\"}" \
   localhost:9090 Product/GetProduct)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 else
@@ -122,6 +121,7 @@ else
     EXIT_CODE=1
   fi
 fi
+echo Response : $RESPONSE
 echo "-- Get product end --"
 
 ## Increase product
@@ -130,7 +130,6 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\", \"quantity\": $PRODUCT_QUANTITY_INCDEC}" \
   localhost:9090 Product/IncreaseQuantityProduct)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 else
@@ -140,6 +139,7 @@ else
     EXIT_CODE=1
   fi
 fi
+echo Response : $RESPONSE
 echo "-- Increase product end --"
 
 ## Decrease product
@@ -148,7 +148,6 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\", \"quantity\": $PRODUCT_QUANTITY_INCDEC}" \
   localhost:9090 Product/DecreaseQuantityProduct)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 else
@@ -158,6 +157,7 @@ else
     EXIT_CODE=1
   fi
 fi
+echo Response : $RESPONSE
 echo "-- Decrease product end --"
 
 ## Delete product
@@ -166,10 +166,10 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$PRODUCT_ID\", \"storeId\": \"$STORE_ID\"}" \
   localhost:9090 Product/DeleteProduct)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 fi
+echo Response : $RESPONSE
 echo "-- Delete product end --"
 
 ## Delete store
@@ -178,10 +178,10 @@ RESPONSE=$(grpcurl -plaintext -format-error \
   -H "authorization: Bearer $ADMIN_ACCESS_TOKEN" \
   -d "{\"id\": \"$STORE_ID\"}" \
   localhost:9090 Store/DeleteStore)
-echo Response : $RESPONSE
 if [ $? != 0 ] ; then
   EXIT_CODE=1
 fi
+echo Response : $RESPONSE
 echo "-- Delete store end --"
 
 # -- Exit --
